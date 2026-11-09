@@ -67,7 +67,9 @@ nav.tabs button[aria-selected="true"]{color:#2a1604;background:var(--gold-grad)}
 .tag{position:absolute;top:8px;left:8px;z-index:1;background:rgba(0,0,0,.6);border:1px solid var(--line-2);color:var(--gold);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:1px 8px;border-radius:20px}
 .sizecard{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line-2);border-radius:16px;padding:12px;margin-bottom:14px;background:linear-gradient(180deg,rgba(0,200,83,.10),rgba(0,0,0,.08))}
 .sizecard .sq{width:44px;height:44px;flex:none;border-radius:4px;background:#00c853;box-shadow:0 0 0 3px #fff,0 0 0 4px #111}
-.sizecard b{display:block;font-size:14px}.sizecard small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:2px}
+.sizecard>.grow>b{display:block;font-size:14px}.sizecard small b{font-weight:700;color:var(--gold-hi)}
+.sizechip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);background:rgba(0,0,0,.15);color:var(--gold-hi);border-radius:20px;padding:5px 12px 5px 6px;font-size:12.5px;font-weight:700;margin-bottom:12px}
+.sizechip i{width:18px;height:18px;border-radius:3px;background:#00c853;box-shadow:0 0 0 2px #fff}.sizecard small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:2px}
 .mmset{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.mmset .inp{width:76px;padding:6px 8px;font-size:14px}
 .addcard{border:1px dashed var(--line-2);background:radial-gradient(circle at 50% 35%,rgba(232,194,106,.08),transparent 70%);color:var(--gold);border-radius:16px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:700}
 .addcard .plus{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--gold-grad);color:#2a1604;margin-bottom:6px}
@@ -221,11 +223,13 @@ input[type=range]{width:100%;accent-color:var(--gold)}
     <p class="eyebrow">Collection</p>
     <h2>Trophy Models</h2>
     <p class="sub">ഷെൽഫിലെ ഓരോ model-ന്റെയും photo എടുത്ത്, print area-യുടെ size (mm) save ചെയ്യൂ.</p>
-    <div class="sizecard">
+    <button class="sizechip" id="scShow" type="button" hidden><i></i>Size Card</button>
+    <div class="sizecard" id="sizeCard">
       <div class="sq"></div>
       <div class="grow"><b>Size തനിയെ കിട്ടാൻ: Disni Size Card</b><small>ഒരു തവണ A4-ൽ <b>100% (Actual size)</b>-ൽ print ചെയ്ത്, photo എടുക്കുമ്പോൾ trophy-യുടെ തൊട്ടടുത്ത് നിർത്തൂ. പച്ച ചതുരം app തനിയെ കണ്ടെത്തി mm കണക്കാക്കും.</small>
         <div class="row" style="margin-top:8px"><a class="btn sm primary" href="https://shanirmangattayil-cmd.github.io/disni-trophy-studio/disni-size-card.pdf" target="_blank" rel="noopener">Size card download</a>
-        <label class="mmset">ചതുരം <input class="inp" id="mkMm" type="number" step="0.5" inputmode="decimal"> mm</label></div></div>
+        <label class="mmset">ചതുരം <input class="inp" id="mkMm" type="number" step="0.5" inputmode="decimal"> mm</label></div>
+        <button class="btn ghost sm" id="scHide" type="button" style="margin-top:6px;padding-left:0">ശരി, മനസ്സിലായി — ഇത് ചെറുതാക്കൂ</button></div>
     </div>
     <div class="grid" id="modelGrid"></div>
   </section>
@@ -976,6 +980,10 @@ function openDesignFor(m){
 /* ---------- automatic shape + size from the photo ---------- */
 function markerMm(){ let v=100; try{ v=+localStorage.getItem('disni-marker-mm')||100; }catch(e){} return v; }
 $('mkMm').value=markerMm();
+function scState(hide){ $('sizeCard').hidden=hide; $('scShow').hidden=!hide; }
+try{ scState(localStorage.getItem('disni-sc-hidden')==='1'); }catch(e){}
+$('scHide').onclick=()=>{ scState(true); try{ localStorage.setItem('disni-sc-hidden','1'); }catch(e){} };
+$('scShow').onclick=()=>{ scState(false); try{ localStorage.removeItem('disni-sc-hidden'); }catch(e){} };
 $('mkMm').addEventListener('change',e=>{ const v=+e.target.value; if(v>20&&v<300){ try{ localStorage.setItem('disni-marker-mm',String(v)); }catch(err){} toast('Size card ചതുരം: '+v+' mm'); } else e.target.value=markerMm(); });
 // finds the green square of the Disni Size Card in a photo (no AI needed)
 function detectMarker(im){
