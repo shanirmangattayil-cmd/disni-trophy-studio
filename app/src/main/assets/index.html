@@ -1,4 +1,5 @@
 <!doctype html><html lang="ml"><head><meta charset="utf-8">
+<meta name="disni-web-version" content="1794252612">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#7a0716">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1366,8 +1367,11 @@ window.disniBack = ()=>{
 };
 
 // update check (phone app)
-if(NATIVE){ fetch(`https://raw.githubusercontent.com/${REPO}/main/release/version.txt?t=${Date.now()}`).then(r=>r.ok?r.text():'').then(t=>{ const v=parseInt(t,10); if(v&&v>NATIVE.versionCode()){ $('updBar').hidden=false; } }).catch(()=>{}); }
-$('updBtn').onclick=()=>{ if(NATIVE) NATIVE.open(APK_URL); else location.reload(); };
+let updMode='apk';
+if(NATIVE){ fetch(`https://raw.githubusercontent.com/${REPO}/main/release/version.txt?t=${Date.now()}`).then(r=>r.ok?r.text():'').then(t=>{ const v=parseInt(t,10); if(v&&v>NATIVE.versionCode()&&updMode==='apk'){ $('updBar').querySelector('span').textContent='പുതിയ app version ready'; $('updBar').hidden=false; } }).catch(()=>{}); }
+// new screens downloaded in the background (no reinstall): reload to use them
+window.disniWebUpdated = ()=>{ updMode='web'; $('updBar').querySelector('span').textContent='പുതിയ മാറ്റങ്ങൾ വന്നു'; $('updBar').hidden=false; };
+$('updBtn').onclick=()=>{ if(updMode==='web'||!NATIVE){ persistCur(); setTimeout(()=>location.reload(),150); } else NATIVE.open(APK_URL); };
 
 // Auto background without Claude: pick by the award words
 if(!window.claude){ $('bgAuto').hidden=false; $('bgAuto').onclick=()=>{

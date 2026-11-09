@@ -29,6 +29,14 @@ import androidx.core.content.FileProvider;
 import androidx.webkit.WebViewAssetLoader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import org.json.JSONObject;
@@ -38,6 +46,10 @@ public class MainActivity extends Activity {
     static final String HOME = "https://appassets.androidplatform.net/assets/index.html";
     static final String AUTH = "com.disni.trophies.files";
     static final int PICK = 41, VOICE = 43, CONTACT = 44;
+    /** The app's screens are also published here; newer copies are downloaded and used without reinstalling. */
+    static final String LIVE_URL = "https://shanirmangattayil-cmd.github.io/disni-trophy-studio/app/index.html";
+    static final Pattern VER = Pattern.compile("name=\"disni-web-version\" content=\"(\\d+)\"");
+    long lastCheck = 0;
     WebView web;
     ValueCallback<Uri[]> pending;
     File cameraFile;
@@ -57,7 +69,20 @@ public class MainActivity extends Activity {
         final WebViewAssetLoader loader = new WebViewAssetLoader.Builder()
             .addPathHandler("/assets/", new WebViewAssetLoader.AssetsPathHandler(this)).build();
         web.setWebViewClient(new WebViewClient() {
-            @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) { return loader.shouldInterceptRequest(r.getUrl()); }
+            @Override public WebResourceResponse shouldInterceptRequest(WebView v, WebResourceRequest r) {
+                Uri u = r.getUrl();
+                if ("appassets.androidplatform.net".equals(u.getHost()) && "/assets/index.html".equals(u.getPath())) {
+                    File live = liveFile();
+                    if (live.exists() && versionOf(live) > bundledVersion()) {
+                        try {
+                            WebResourceResponse res = new WebResourceResponse("text/html", "utf-8", new FileInputStream(live));
+                            HashMap<String, String> h = new HashMap<>(); h.put("Cache-Control", "no-store"); res.setResponseHeaders(h);
+                            return res;
+                        } catch (Exception ignored) { }
+                    }
+                }
+                return loader.shouldInterceptRequest(u);
+            }
             @Override public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
                 Uri u = r.getUrl();
                 if ("appassets.androidplatform.net".equals(u.getHost())) return false;
@@ -89,6 +114,55 @@ public class MainActivity extends Activity {
         web.addJavascriptInterface(new Bridge(), "DisniNative");
         if (b != null) web.restoreState(b); else web.loadUrl(HOME);
     }
+
+    File liveFile() { return new File(new File(getFilesDir(), "live"), "index.html"); }
+
+    static long parseVersion(String head) { Matcher m = VER.matcher(head); return m.find() ? Long.parseLong(m.group(1)) : 0; }
+
+    long versionOf(File f) {
+        try (InputStream in = new FileInputStream(f)) { byte[] b = new byte[4096]; int n = in.read(b); return n > 0 ? parseVersion(new String(b, 0, n, "UTF-8")) : 0; }
+        catch (Exception e) { return 0; }
+    }
+
+    long bundled = -1;
+    long bundledVersion() {
+        if (bundled >= 0) return bundled;
+        try (InputStream in = getAssets().open("index.html")) { byte[] b = new byte[4096]; int n = in.read(b); bundled = n > 0 ? parseVersion(new String(b, 0, n, "UTF-8")) : 0; }
+        catch (Exception e) { bundled = 0; }
+        return bundled;
+    }
+
+    long currentVersion() { File live = liveFile(); long lv = live.exists() ? versionOf(live) : 0; return Math.max(lv, bundledVersion()); }
+
+    /** Downloads the newest published screens in the background; the page offers to reload when one arrives. */
+    void checkLive() {
+        long now = System.currentTimeMillis();
+        if (now - lastCheck < 5 * 60 * 1000) return;
+        lastCheck = now;
+        new Thread(() -> {
+            HttpURLConnection c = null;
+            try {
+                c = (HttpURLConnection) new URL(LIVE_URL + "?t=" + now).openConnection();
+                c.setConnectTimeout(10000); c.setReadTimeout(30000); c.setUseCaches(false);
+                if (c.getResponseCode() != 200) return;
+                ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                try (InputStream in = c.getInputStream()) { byte[] buf = new byte[16384]; int n; while ((n = in.read(buf)) > 0) bo.write(buf, 0, n); }
+                byte[] data = bo.toByteArray();
+                String text = new String(data, "UTF-8");
+                long v = parseVersion(text.length() > 4096 ? text.substring(0, 4096) : text);
+                if (v <= currentVersion() || !text.contains("DisniNative") || !text.trim().endsWith("</html>")) return;
+                File dir = liveFile().getParentFile(); dir.mkdirs();
+                File tmp = new File(dir, "index.html.tmp");
+                try (FileOutputStream o = new FileOutputStream(tmp)) { o.write(data); }
+                if (!tmp.renameTo(liveFile())) { liveFile().delete(); tmp.renameTo(liveFile()); }
+                final long nv = v;
+                runOnUiThread(() -> js("disniWebUpdated", String.valueOf(nv)));
+            } catch (Exception ignored) {
+            } finally { if (c != null) c.disconnect(); }
+        }).start();
+    }
+
+    @Override protected void onResume() { super.onResume(); checkLive(); }
 
     Intent cameraIntent() {
         try {
@@ -192,6 +266,7 @@ public class MainActivity extends Activity {
 
     class Bridge {
         @JavascriptInterface public int versionCode() { return BuildConfig.VERSION_CODE; }
+        @JavascriptInterface public String webVersion() { return String.valueOf(currentVersion()); }
         @JavascriptInterface public void open(String url) { runOnUiThread(() -> openExternal(url)); }
         @JavascriptInterface public void copy(String text) {
             runOnUiThread(() -> { ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE); if (cm != null) cm.setPrimaryClip(ClipData.newPlainText("Disni", text)); });
