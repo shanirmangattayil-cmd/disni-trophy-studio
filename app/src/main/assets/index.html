@@ -1,5 +1,5 @@
 <!doctype html><html lang="ml"><head><meta charset="utf-8">
-<meta name="disni-web-version" content="1794252903">
+<meta name="disni-web-version" content="1794253432">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#7a0716">
 <link rel="manifest" href="manifest.webmanifest">
@@ -118,6 +118,8 @@ textarea.inp{resize:vertical;min-height:46px}
 .stage{background:repeating-conic-gradient(from 0deg at 50% 45%,rgba(255,214,120,.07) 0deg 4deg,transparent 4deg 10deg),radial-gradient(70% 70% at 50% 45%,#8a1426,#2b040c);border:1px solid var(--line);border-radius:20px;display:flex;align-items:center;justify-content:center;padding:22px 16px 30px;position:relative;touch-action:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
 .stage{overflow:visible}.stage canvas{display:block;touch-action:none;filter:drop-shadow(0 18px 24px rgba(0,0,0,.55))}
 .dims{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-family:var(--f-brand);font-weight:700;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;letter-spacing:.12em}
+.tview{position:absolute;top:8px;right:8px;z-index:4;border:1px solid var(--line-2);background:rgba(43,4,12,.8);color:var(--gold-hi);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700}
+.tview[aria-pressed="true"]{background:var(--gold-grad);color:#2a1604}
 .hintline{font-size:12.5px;color:var(--muted);margin:8px 2px 12px;text-align:center}
 
 .seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--well);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:10px}
@@ -269,7 +271,7 @@ input[type=range]{width:100%;accent-color:var(--gold)}
         <div class="size" id="mbSize"></div>
       </div>
     </div>
-    <div class="stage" id="stage"><canvas id="cv"></canvas><div class="ftool" id="ftool" hidden></div><span class="dims" id="dims"></span></div>
+    <div class="stage" id="stage"><button class="tview" id="tview" type="button" hidden>Trophy-യിൽ കാണൂ</button><canvas id="cv"></canvas><div class="ftool" id="ftool" hidden></div><span class="dims" id="dims"></span></div>
     <p class="hintline">Tap: select · Drag: നീക്കാം · രണ്ട് വിരൽ കൊണ്ട് pinch: വലുതാക്കാം / ചെറുതാക്കാം</p>
 
     <div class="seg" role="tablist" id="seg">
@@ -433,7 +435,7 @@ const FONTS = [
 const FONT_WEIGHT_400 = ['Great Vibes','Allura','Satisfy','Pacifico','Courgette','Lobster','Anton','Bebas Neue','Righteous','Abril Fatface','Marcellus','Chilanka'];
 const MAL_FALLBACK = '"Noto Sans Malayalam","Manjari"';
 const COLORS = ['#c8102e','#1b2b6b','#1d63b8','#111111','#ffffff','#e8c26a','#b8860b','#0f7a3e','#7a0718','#e85d9b'];
-const SHAPES = [['rect','Rectangle'],['rounded','Rounded'],['octagon','Octagon'],['circle','Circle'],['arch','Arch'],['plaque','Shield']];
+const SHAPES = [['rect','Rectangle'],['rounded','Rounded'],['octagon','Octagon'],['circle','Circle'],['arch','Arch'],['plaque','Shield'],['custom','Photo shape']];
 const BGS = {
   silver:{name:'Silver', stops:['#f1f2f5','#c4c8d0'], sparkle:true, pal:{head:'#c8102e',name:'#1b2b6b',body:'#1a1a1a'}},
   gold:{name:'Gold', stops:['#fbe7a1','#d19a1d'], sparkle:true, pal:{head:'#7a0718',name:'#3a1300',body:'#2b1a00'}},
@@ -466,21 +468,29 @@ function sampleModels(){
   ];
 }
 function newDesign(model){
-  return {id:uid(), name:'', modelId:model.id, wmm:model.wmm, hmm:model.hmm, shape:model.shape,
+  return {id:uid(), name:'', modelId:model.id, wmm:model.wmm, hmm:model.hmm, shape:model.shape, poly:model.poly||null, smooth:!!model.smooth,
     bg:'silver', border:'double', borderColor:'#c8102e', tpl:'classic',
     fields:{head:'', name:'', det:'', by:''}, layers:[]};
 }
 
 /* ---------- geometry ---------- */
-function shapePath(ctx, shape, x, y, w, h){
+function shapePath(ctx, shape, x, y, w, h, poly, smooth){
   ctx.beginPath();
   const m = Math.min(w,h);
+  if(shape==='custom' && poly && poly.length>2){ polyPath(ctx,poly,smooth,x,y,w,h); return; }
   if(shape==='rounded'){ const r=m*0.08; rr(ctx,x,y,w,h,r); }
   else if(shape==='octagon'){ const c=m*0.293; ctx.moveTo(x+c,y); ctx.lineTo(x+w-c,y); ctx.lineTo(x+w,y+c); ctx.lineTo(x+w,y+h-c); ctx.lineTo(x+w-c,y+h); ctx.lineTo(x+c,y+h); ctx.lineTo(x,y+h-c); ctx.lineTo(x,y+c); ctx.closePath(); }
   else if(shape==='circle'){ ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2); }
   else if(shape==='arch'){ const r=Math.min(w/2,h*0.5); ctx.moveTo(x,y+h); ctx.lineTo(x,y+r); ctx.ellipse(x+w/2,y+r,w/2,r,0,Math.PI,0); ctx.lineTo(x+w,y+h); ctx.closePath(); }
   else if(shape==='plaque'){ ctx.moveTo(x+w*.1,y); ctx.lineTo(x+w*.9,y); ctx.lineTo(x+w,y+h*.12); ctx.lineTo(x+w*.88,y+h); ctx.lineTo(x+w*.12,y+h); ctx.lineTo(x,y+h*.12); ctx.closePath(); }
   else ctx.rect(x,y,w,h);
+}
+function polyPath(ctx,poly,smooth,x,y,w,h){
+  const P=poly.map(([a,b])=>[x+a*w,y+b*h]), n=P.length, mid=(a,b)=>[(a[0]+b[0])/2,(a[1]+b[1])/2];
+  if(!smooth){ ctx.moveTo(P[0][0],P[0][1]); for(let i=1;i<n;i++) ctx.lineTo(P[i][0],P[i][1]); ctx.closePath(); return; }
+  const s0=mid(P[n-1],P[0]); ctx.moveTo(s0[0],s0[1]);
+  for(let i=0;i<n;i++){ const q=mid(P[i],P[(i+1)%n]); ctx.quadraticCurveTo(P[i][0],P[i][1],q[0],q[1]); }
+  ctx.closePath();
 }
 function rr(ctx,x,y,w,h,r){ ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
 
@@ -494,7 +504,7 @@ function render(ctx, d, W, H, opt={}){
   ctx.save();
   ctx.clearRect(0,0,W,H);
   if(opt.screen){ ctx.fillStyle='rgba(255,255,255,0.035)'; ctx.fillRect(0,0,W,H); }
-  shapePath(ctx,d.shape,0,0,W,H);
+  shapePath(ctx,d.shape,0,0,W,H,d.poly,d.smooth);
   ctx.save(); ctx.clip();
   const bg = BGS[d.bg]||BGS.silver;
   if(bg.stops){
@@ -515,11 +525,11 @@ function render(ctx, d, W, H, opt={}){
   if(d.border!=='none'){
     const m=Math.min(W,H); ctx.strokeStyle=d.borderColor; const ins=m*0.04;
     ctx.lineWidth=Math.max(1,m*0.008);
-    shapePath(ctx,d.shape,ins,ins,W-ins*2,H-ins*2); ctx.stroke();
-    if(d.border==='double'){ const i2=ins+m*0.022; ctx.lineWidth=Math.max(.8,m*0.004); shapePath(ctx,d.shape,i2,i2,W-i2*2,H-i2*2); ctx.stroke(); }
+    shapePath(ctx,d.shape,ins,ins,W-ins*2,H-ins*2,d.poly,d.smooth); ctx.stroke();
+    if(d.border==='double'){ const i2=ins+m*0.022; ctx.lineWidth=Math.max(.8,m*0.004); shapePath(ctx,d.shape,i2,i2,W-i2*2,H-i2*2,d.poly,d.smooth); ctx.stroke(); }
   }
   if(opt.screen){
-    shapePath(ctx,d.shape,0,0,W,H); ctx.strokeStyle='rgba(232,194,106,.5)'; ctx.lineWidth=1; ctx.stroke();
+    shapePath(ctx,d.shape,0,0,W,H,d.poly,d.smooth); ctx.strokeStyle='rgba(232,194,106,.5)'; ctx.lineWidth=1; ctx.stroke();
     const b = boxes.find(b=>b.id===sel);
     if(b){ ctx.setLineDash([5,4]); ctx.strokeStyle='#e8c26a'; ctx.lineWidth=1.5; ctx.strokeRect(b.x-3,b.y-3,b.w+6,b.h+6); ctx.setLineDash([]); }
     if(opt.guide){ ctx.strokeStyle='rgba(232,194,106,.85)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke(); }
@@ -647,9 +657,25 @@ function draw(){
   if(!cur || view!=='design' || !cssW) return;
   const ctx=cv.getContext('2d'); const dpr=cv.width/cssW || 1;
   ctx.setTransform(dpr,0,0,dpr,0,0);
+  const m = models.find(x=>x.id===cur.modelId), tr = m&&m.trace&&m.photo ? m.trace : null;
+  $('tview').hidden=!tr; $('tview').setAttribute('aria-pressed',!!(tr&&trophyView));
+  if(tr && trophyView){
+    const im=getImg(m.photo);
+    if(im&&im.complete&&im.naturalWidth){
+      ctx.clearRect(0,0,cssW,cssH);
+      const nw=im.naturalWidth, nh=im.naturalHeight, padX=(tr.x1-tr.x0)*.12, padY=(tr.y1-tr.y0)*.12;
+      ctx.drawImage(im,(tr.x0-padX)*nw,(tr.y0-padY)*nh,(tr.x1-tr.x0+2*padX)*nw,(tr.y1-tr.y0+2*padY)*nh,-cssW*.12,-cssH*.12,cssW*1.24,cssH*1.24);
+      const off=document.createElement('canvas'); off.width=cv.width; off.height=cv.height; const ox=off.getContext('2d'); ox.setTransform(dpr,0,0,dpr,0,0);
+      boxes = render(ox,cur,cssW,cssH,{guide});
+      ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.globalAlpha=.86; ctx.drawImage(off,0,0); ctx.restore();
+      placeTool(); return;
+    }
+  }
   boxes = render(ctx,cur,cssW,cssH,{screen:true,guide});
   placeTool();
 }
+let trophyView=false;
+$('tview').onclick=()=>{ trophyView=!trophyView; draw(); toast(trophyView?'Trophy photo-യുടെ മുകളിൽ design — print-ൽ photo വരില്ല':'Design മാത്രം'); };
 const I = {
   minus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg>',
   plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>',
@@ -927,16 +953,17 @@ function syncModelBar(){
 }
 $('modelSel').onchange=e=>{ const m=models.find(m=>m.id===e.target.value); if(m) setModel(m); };
 function setModel(m){
-  cur.modelId=m.id; cur.wmm=m.wmm; cur.hmm=m.hmm; cur.shape=m.shape;
+  cur.modelId=m.id; cur.wmm=m.wmm; cur.hmm=m.hmm; cur.shape=m.shape; cur.poly=m.poly||null; cur.smooth=!!m.smooth; trophyView=false;
   if(cur.layers.some(l=>l.type==='text')) applyTemplate();
   syncModelBar(); sizeStage(); draw(); persistCur();
 }
 const fmt = n => (Math.round(n*10)/10).toString();
 
 /* ---------- models view ---------- */
-function shapeIcon(shape,size=30,color='#e8c26a'){
+function shapeIcon(shape,size=30,color='#e8c26a',poly,smooth,ar){
   const c=document.createElement('canvas'); c.width=size*2; c.height=size*2; const x=c.getContext('2d');
-  shapePath(x,shape,4,4,size*2-8,size*2-8); x.strokeStyle=color; x.lineWidth=3; x.stroke(); return c;
+  let bw=size*2-8, bh=size*2-8; if(shape==='custom'&&ar){ if(ar>1) bh=bw/ar; else bw=bh*ar; }
+  shapePath(x,shape,(size*2-bw)/2,(size*2-bh)/2,bw,bh,poly,smooth); x.strokeStyle=color; x.lineWidth=3; x.stroke(); return c;
 }
 function renderModels(){
   const g=$('modelGrid'); g.innerHTML='';
@@ -946,7 +973,7 @@ function renderModels(){
   for(const m of models){
     const b=document.createElement('button'); b.className='mcard';
     b.innerHTML=`<div class="ph">${m.photo?`<img src="${m.photo}" alt="">`:''}${m.example?'<span class="tag">Sample</span>':''}${m.price?`<span class="pricebadge">₹${(+m.price).toLocaleString('en-IN')}</span>`:''}<span class="sizebadge">${fmt(m.wmm)} × ${fmt(m.hmm)}</span></div><div class="meta"><b>${esc(m.name)}</b><small>${(SHAPES.find(s=>s[0]===m.shape)||[])[1]||''} · mm</small></div>`;
-    if(!m.photo) b.querySelector('.ph').prepend(shapeIcon(m.shape,60));
+    if(!m.photo) b.querySelector('.ph').prepend(shapeIcon(m.shape,60,'#e8c26a',m.poly,m.smooth,m.wmm/m.hmm));
     b.onclick=()=>modelSheet(m); g.appendChild(b);
   }
 }
@@ -963,6 +990,7 @@ function modelSheet(m){
           <label class="btn sm">Gallery<input type="file" id="mGal" accept="image/*" hidden></label>
         </div></div>
       <button class="measure-cta" id="mMeasure" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg><span><b>Photo-യിൽ നിന്ന് size അളക്കൂ</b><small>Card / A4 / coin trophy-യുടെ അടുത്ത് വച്ച് എടുത്ത photo വേണം</small></span></button>
+      <button class="measure-cta" id="mTrace" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h10l3 5-2 13H6L4 8z" stroke-dasharray="3 2"/><circle cx="7" cy="3" r="1.4" fill="currentColor"/><circle cx="17" cy="3" r="1.4" fill="currentColor"/><circle cx="18" cy="21" r="1.4" fill="currentColor"/><circle cx="6" cy="21" r="1.4" fill="currentColor"/></svg><span><b>Photo-യിൽ നിന്ന് shape വരയ്ക്കൂ</b><small id="mTraceS">Trophy-യുടെ print ചെയ്യുന്ന ഭാഗത്തിന്റെ അരികിൽ തൊട്ട് തൊട്ട് shape എടുക്കാം</small></span></button>
       <label class="f">Model name / code <input class="inp" id="mName" value="${esc(st.name)}" placeholder="ഉദാ: Glass Octagon G-12"></label>
       <div class="two"><label class="f">Width (mm) <input class="inp" id="mW" type="number" step="0.5" inputmode="decimal" value="${st.wmm}" placeholder="75"></label>
       <label class="f">Height (mm) <input class="inp" id="mH" type="number" step="0.5" inputmode="decimal" value="${st.hmm}" placeholder="150"></label></div>
@@ -978,7 +1006,7 @@ function modelSheet(m){
       <div id="mConfirm"></div>
     </div></div></div>`;
   const sh=$('mShapes');
-  SHAPES.forEach(([k,n])=>{ const b=document.createElement('button'); b.className='chip'; b.dataset.k=k; b.setAttribute('aria-pressed',k===st.shape); b.appendChild(shapeIcon(k,14)); b.append(n); b.onclick=()=>{ st.shape=k; sh.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.k===k)); }; sh.appendChild(b); });
+  SHAPES.filter(([k])=>k!=='custom'||st.poly).forEach(([k,n])=>{ const b=document.createElement('button'); b.className='chip'; b.dataset.k=k; b.setAttribute('aria-pressed',k===st.shape); b.appendChild(shapeIcon(k,14,'#e8c26a',st.poly,st.smooth,st.wmm&&st.hmm?st.wmm/st.hmm:1)); b.append(n); b.onclick=()=>{ st.shape=k; sh.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.k===k)); }; sh.appendChild(b); });
   const pick=async e=>{ const f=e.target.files[0]; if(!f) return; st.photo=await fileToDataURL(f,1600); $('mPv').innerHTML=`<img src="${st.photo}" alt="">`; };
   $('mCam').onchange=pick; $('mGal').onchange=pick;
   const close=()=>root.innerHTML='';
@@ -988,6 +1016,12 @@ function modelSheet(m){
   $('mMeasure').onclick=()=>{ grab(); if(!st.photo){ $('mErr').hidden=false; $('mErr').textContent='ആദ്യം Camera / Gallery വഴി photo ചേർക്കൂ.'; return; }
     measureSheet(st.photo, st.measure, (res)=>{ st.wmm=res.w; st.hmm=res.h; st.measure=res.state; modelSheet(Object.assign(st,{})); if(isNew) setTimeout(()=>{},0); }, ()=>modelSheet(st));
     if(isNew){ /* keep draft */ } };
+  if(st.poly) $('mTraceS').textContent=`Shape എടുത്തിട്ടുണ്ട് (${st.poly.length} points) — മാറ്റാൻ tap ചെയ്യൂ`;
+  $('mTrace').onclick=()=>{ grab(); if(!st.photo){ $('mErr').hidden=false; $('mErr').textContent='ആദ്യം Camera / Gallery വഴി photo ചേർക്കൂ.'; return; }
+    traceSheet(st, res=>{ st.poly=res.poly; st.smooth=res.smooth; st.trace=res.trace; st.shape='custom';
+        if(res.w&&res.h){ st.wmm=res.w; st.hmm=res.h; toast(`Shape + size: ${fmt(res.w)} × ${fmt(res.h)} mm`); }
+        else { const ar=res.aspect; if(st.wmm>0) st.hmm=Math.round(st.wmm/ar*2)/2; else if(st.hmm>0) st.wmm=Math.round(st.hmm*ar*2)/2; toast('Shape എടുത്തു — width / height ഒന്ന് check ചെയ്യൂ'); }
+        modelSheet(st); }, ()=>modelSheet(st)); };
   const save=()=>{ grab(); st.wmm=+$('mW').value; st.hmm=+$('mH').value;
     if(!st.name||!(st.wmm>0)||!(st.hmm>0)){ $('mErr').hidden=false; $('mErr').textContent='Name, width, height എല്ലാം നൽകൂ.'; return null; }
     st.example=false; const i=models.findIndex(x=>x.id===st.id); if(i>=0) models[i]=st; else models.unshift(st);
@@ -1005,6 +1039,73 @@ function openDesignFor(m){
   cur=newDesign(m); if(keep) cur.fields=keep;
   if(cur.fields.name||cur.fields.det) applyTemplate();
   persistCur(); go('design');
+}
+
+/* ---------- trace the trophy outline from its photo ---------- */
+function traceSheet(st, onDone, onBack){
+  const root=$('sheetRoot');
+  let pts = st.trace&&st.trace.pts ? JSON.parse(JSON.stringify(st.trace.pts)) : [];
+  let smooth = st.trace ? !!st.trace.smooth : true;
+  root.innerHTML=`<div class="sheet-bg"><div class="sheet" role="dialog" aria-label="Trace shape">
+    <div class="grab"></div>
+    <p class="eyebrow">Shape</p><h2>Trophy shape വരയ്ക്കൂ</h2>
+    <p class="sub">Print ചെയ്യുന്ന ഭാഗത്തിന്റെ അരികിലൂടെ ചുറ്റും തൊട്ട് തൊട്ട് points ഇടൂ (8–20 എണ്ണം മതി). Dot തൊട്ട് വലിച്ച് ശരിയാക്കാം.</p>
+    <div class="chips" style="margin-bottom:10px"><button class="chip h" id="tSmooth"></button><button class="chip h" id="tUndo">↶ Undo</button><button class="chip h" id="tClear">Clear</button></div>
+    <div class="mwrap"><canvas id="tcv"></canvas></div>
+    <p class="sub" id="tInfo" style="margin:10px 0 0"></p>
+    <div class="row" style="margin-top:12px"><button class="btn ghost" id="tBack">Back</button><button class="btn primary grow" id="tUse">ഈ shape use ചെയ്യൂ</button></div>
+  </div></div>`;
+  const cvs=$('tcv'), im=new Image(); let W=0,H=0, dpr=Math.min(3,window.devicePixelRatio||1), dragI=-1, loupe=null;
+  im.onload=()=>{ const avail=cvs.parentElement.clientWidth, maxH=window.innerHeight*0.58, ar=im.naturalWidth/im.naturalHeight;
+    W=Math.min(avail,maxH*ar); H=W/ar; cvs.style.width=W+'px'; cvs.style.height=H+'px'; cvs.parentElement.style.width=W+'px'; cvs.parentElement.style.margin='0 auto';
+    cvs.width=Math.round(W*dpr); cvs.height=Math.round(H*dpr); paint(); };
+  im.src=st.photo;
+  const mmPerPx=()=>{ const M=st.measure; if(!M) return 0; const rm=M.ref==='custom'?(+M.custom||0):M.refMm; const [a,b]=M.seg.ref;
+    const len=Math.hypot((a[0]-b[0])*im.naturalWidth,(a[1]-b[1])*im.naturalHeight); return rm&&len>4 ? rm/len : 0; };
+  function bbox(){ const xs=pts.map(p=>p[0]), ys=pts.map(p=>p[1]); return {x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)}; }
+  function info(){
+    $('tSmooth').textContent = smooth ? '◠ Curved edges' : '◇ Straight edges';
+    $('tSmooth').setAttribute('aria-pressed',smooth);
+    if(pts.length<3){ $('tInfo').textContent=`${pts.length} points · കുറഞ്ഞത് 3 വേണം`; return; }
+    const b=bbox(), k=mmPerPx();
+    $('tInfo').textContent = `${pts.length} points` + (k ? ` · ${fmt(Math.round((b.x1-b.x0)*im.naturalWidth*k*2)/2)} × ${fmt(Math.round((b.y1-b.y0)*im.naturalHeight*k*2)/2)} mm (Measure-ൽ നിന്ന്)` : ' · Size: Measure ചെയ്തിട്ടില്ലെങ്കിൽ width / height കൈകൊണ്ട് നൽകൂ');
+  }
+  function paint(){
+    const x=cvs.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,W,H); x.drawImage(im,0,0,W,H);
+    if(pts.length>2){ x.save(); x.fillStyle='rgba(0,0,0,.45)'; x.beginPath(); x.rect(0,0,W,H); polyPath(x,pts,smooth,0,0,W,H); x.fill('evenodd'); x.restore();
+      x.beginPath(); polyPath(x,pts,smooth,0,0,W,H); x.lineWidth=2.2; x.strokeStyle='#e8c26a'; x.stroke(); }
+    else if(pts.length===2){ x.beginPath(); x.moveTo(pts[0][0]*W,pts[0][1]*H); x.lineTo(pts[1][0]*W,pts[1][1]*H); x.lineWidth=2; x.strokeStyle='#e8c26a'; x.stroke(); }
+    pts.forEach((p,i)=>{ x.beginPath(); x.arc(p[0]*W,p[1]*H,i===dragI?10:(i===0?8:6),0,Math.PI*2); x.fillStyle=i===0?'#ff4d6a':'#e8c26a'; x.fill(); x.lineWidth=2; x.strokeStyle='#2a0409'; x.stroke(); });
+    if(loupe){ const R=Math.min(58,W*0.2), z=3, cx=loupe.x<W/2?W-R-10:R+10, cy=R+10;
+      x.save(); x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.clip();
+      const sx=loupe.x/W*im.naturalWidth, sy=loupe.y/H*im.naturalHeight, sw=(R*2/z)/W*im.naturalWidth, sh=(R*2/z)/H*im.naturalHeight;
+      x.drawImage(im,sx-sw/2,sy-sh/2,sw,sh,cx-R,cy-R,R*2,R*2);
+      x.strokeStyle='#e8c26a'; x.lineWidth=1.2; x.beginPath(); x.moveTo(cx-R,cy); x.lineTo(cx+R,cy); x.moveTo(cx,cy-R); x.lineTo(cx,cy+R); x.stroke();
+      x.restore(); x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.lineWidth=2; x.strokeStyle='#fff'; x.stroke(); }
+    info();
+  }
+  cvs.addEventListener('pointerdown',e=>{
+    const r=cvs.getBoundingClientRect(), px=e.clientX-r.left, py=e.clientY-r.top;
+    let best=-1, bd=24; pts.forEach((p,i)=>{ const d=Math.hypot(p[0]*W-px,p[1]*H-py); if(d<bd){bd=d;best=i;} });
+    if(best<0){ pts.push([px/W,py/H]); best=pts.length-1; }
+    dragI=best; loupe={x:px,y:py}; cvs.setPointerCapture(e.pointerId); paint();
+  });
+  cvs.addEventListener('pointermove',e=>{ if(dragI<0) return; const r=cvs.getBoundingClientRect();
+    const px=Math.max(0,Math.min(W,e.clientX-r.left)), py=Math.max(0,Math.min(H,e.clientY-r.top)); pts[dragI]=[px/W,py/H]; loupe={x:px,y:py}; paint(); });
+  const up=()=>{ dragI=-1; loupe=null; paint(); };
+  cvs.addEventListener('pointerup',up); cvs.addEventListener('pointercancel',up);
+  $('tSmooth').onclick=()=>{ smooth=!smooth; paint(); };
+  $('tUndo').onclick=()=>{ pts.pop(); paint(); };
+  $('tClear').onclick=()=>{ pts=[]; paint(); };
+  $('tBack').onclick=onBack;
+  $('tUse').onclick=()=>{
+    if(pts.length<3){ toast('കുറഞ്ഞത് 3 points ഇടൂ'); return; }
+    const b=bbox(), bw=b.x1-b.x0, bh=b.y1-b.y0; if(bw<0.02||bh<0.02){ toast('Shape വളരെ ചെറുതാണ്'); return; }
+    const poly=pts.map(p=>[ +((p[0]-b.x0)/bw).toFixed(4), +((p[1]-b.y0)/bh).toFixed(4) ]);
+    const aspect=(bw*im.naturalWidth)/(bh*im.naturalHeight), k=mmPerPx();
+    const w=k?Math.round(bw*im.naturalWidth*k*2)/2:0, h=k?Math.round(bh*im.naturalHeight*k*2)/2:0;
+    onDone({poly,smooth,aspect,w,h,trace:{pts,smooth,...b}});
+  };
 }
 
 /* ---------- measure from photo ---------- */
