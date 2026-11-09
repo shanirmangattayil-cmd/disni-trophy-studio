@@ -1,0 +1,1171 @@
+<title>Disni Trophy Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Allura&family=Anek+Malayalam:wght@500;700&family=Bebas+Neue&family=Cinzel+Decorative:wght@700&family=Courgette&family=Lobster&family=Marcellus&family=Pacifico&family=Righteous&family=Satisfy&family=Tangerine:wght@700&family=Anton&family=Baloo+Chettan+2:wght@500;700;800&family=Chilanka&family=Cinzel:wght@700&family=Dancing+Script:wght@700&family=Gayathri:wght@400;700&family=Great+Vibes&family=Manjari:wght@400;700&family=Manrope:wght@400;600;700;800&family=Montserrat:wght@500;700&family=Noto+Sans+Malayalam:wght@400;600;700&family=Noto+Serif+Malayalam:wght@400;700&family=Oswald:wght@500;700&family=Playfair+Display:wght@700&family=Poppins:wght@500;700&family=Saira+Condensed:wght@600;700;800&display=swap">
+<style>
+/* Layout: one-column phone app in a jeweller's-case look — warm black, gold hairlines, crimson glow from the Disni logo; floating pill nav at the bottom. Committed dark look. */
+:root{
+  --bg:#3a0610; --bg-2:#4a0914; --surface:#5a0c19; --surface-2:#6e1121; --well:#2b040c;
+  --line:rgba(246,206,116,.24); --line-2:rgba(246,206,116,.5);
+  --gold:#e8c26a; --gold-hi:#fbe7a6; --gold-lo:#9c6b16; --red:#c8102e; --red-hi:#e2324d;
+  --text:#fff4e2; --muted:#e8bfa9; --danger:#ff7a7a; --wa:#25d366;
+  --gold-grad:linear-gradient(180deg,#fbe7a6 0%,#e8c26a 38%,#c48b22 70%,#f0d07c 100%);
+  --f-brand:"Saira Condensed","Arial Narrow",sans-serif;
+  --f-ui:"Manrope","Noto Sans Malayalam",system-ui,sans-serif;
+  color-scheme:dark;
+}
+html,body{background:var(--bg);color:var(--text)}
+body{font-family:var(--f-ui);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:calc(96px + env(safe-area-inset-bottom,0px));
+  background:repeating-conic-gradient(from 0deg at 50% 70px,rgba(255,214,120,.06) 0deg 5deg,transparent 5deg 12deg),radial-gradient(130% 75% at 50% 0%,#d0142f 0%,#8c0a1d 38%,#4a0914 70%,var(--bg) 100%);background-attachment:fixed}
+*{box-sizing:border-box}
+.wrap{max-width:560px;margin:0 auto}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+
+header.brand{display:flex;align-items:center;gap:14px;padding-block:18px 14px}
+header.brand img{width:54px;height:54px;border-radius:50%;box-shadow:0 0 0 1px var(--gold),0 0 0 4px rgba(232,194,106,.12),0 8px 30px rgba(200,16,46,.45)}
+.brand h1{margin:0;font-family:var(--f-brand);font-weight:800;font-size:30px;letter-spacing:.04em;text-transform:uppercase;font-style:italic;line-height:1;background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand small{display:block;color:var(--muted);font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;margin-top:4px}
+
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);opacity:.85;margin:0 0 2px}
+h2{font-family:var(--f-brand);font-weight:700;font-size:24px;letter-spacing:.02em;margin:0 0 6px;color:var(--text);text-wrap:balance}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 14px}
+.rule{height:1px;background:linear-gradient(90deg,transparent,var(--line-2),transparent);margin:22px 0}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line-2);background:rgba(255,255,255,.02);border-radius:12px;padding:9px 15px;min-height:44px;text-decoration:none;font-weight:600;font-size:14.5px;transition:transform .12s ease,background .2s}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--gold-grad);color:#2a1604;border-color:#f6dc8f;font-weight:800;box-shadow:0 6px 22px rgba(232,194,106,.18),inset 0 1px 0 rgba(255,255,255,.6)}
+.btn.red{background:linear-gradient(180deg,var(--red-hi),var(--red) 55%,#8e0a20);border-color:var(--gold);color:#fff;font-weight:700;box-shadow:0 6px 22px rgba(200,16,46,.35)}
+.btn.wa{background:linear-gradient(180deg,#36e07a,#1fae55);border-color:#4be78a;color:#04220f;font-weight:800}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.sm{min-height:36px;padding:5px 11px;font-size:13.5px;border-radius:10px}
+.btn.danger{color:var(--danger);border-color:rgba(255,122,122,.3);background:transparent}
+.btn svg{width:18px;height:18px;flex:none}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.grow{flex:1 1 0;min-width:0}
+
+/* nav */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;justify-content:center;padding:0 max(16px,env(safe-area-inset-left,0px)) calc(12px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));pointer-events:none}
+nav.tabs .in{pointer-events:auto;display:flex;max-width:420px;width:100%;gap:4px;padding:5px;border-radius:22px;background:rgba(74,9,20,.9);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line-2);box-shadow:0 14px 40px rgba(0,0,0,.6)}
+nav.tabs button{flex:1;border:0;background:transparent;color:var(--muted);border-radius:17px;padding:7px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;font-size:11.5px;font-weight:600}
+nav.tabs button svg{width:21px;height:21px}
+nav.tabs button[aria-selected="true"]{color:#2a1604;background:var(--gold-grad)}
+
+/* models */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.mcard{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0;min-width:0}
+.mcard .ph{aspect-ratio:4/5;background:var(--well);display:grid;place-items:center;position:relative;overflow:hidden}
+.mcard .ph img{width:100%;height:100%;object-fit:cover}
+.mcard .ph::after{content:"";position:absolute;inset:auto 0 0 0;height:45%;background:linear-gradient(transparent,rgba(43,4,12,.9))}
+.mcard .ph canvas{width:60%;height:auto}
+.mcard .sizebadge{position:absolute;left:10px;bottom:8px;z-index:1;font-family:var(--f-brand);font-weight:700;font-size:16px;letter-spacing:.04em;color:var(--gold-hi);font-variant-numeric:tabular-nums}
+.mcard .meta{padding:9px 11px 12px;display:flex;flex-direction:column;gap:1px;min-width:0}
+.mcard b{font-size:14px;line-height:1.3;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mcard small{color:var(--muted);font-size:12px}
+.tag{position:absolute;top:8px;left:8px;z-index:1;background:rgba(0,0,0,.6);border:1px solid var(--line-2);color:var(--gold);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:1px 8px;border-radius:20px}
+.addcard{border:1px dashed var(--line-2);background:radial-gradient(circle at 50% 35%,rgba(232,194,106,.08),transparent 70%);color:var(--gold);border-radius:16px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:700}
+.addcard .plus{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--gold-grad);color:#2a1604;margin-bottom:6px}
+
+/* sheet */
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.66);backdrop-filter:blur(3px);z-index:40;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:linear-gradient(180deg,#7a1424,#4a0914 40%,#3a0610);border:1px solid var(--line-2);border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:560px;max-height:94vh;overflow:auto;padding:10px max(16px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px))}
+.sheet .grab{width:42px;height:4px;border-radius:4px;background:var(--line-2);margin:0 auto 12px}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+.inp{background:var(--well);border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--text);width:100%;min-width:0;font-weight:500;font-size:15px}
+.inp:focus{border-color:var(--gold)}
+textarea.inp{resize:vertical;min-height:46px}
+.fields{display:flex;flex-direction:column;gap:12px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.photo-pick{display:flex;gap:12px;align-items:stretch}
+.photo-pick .pv{width:84px;height:110px;border-radius:12px;background:var(--well);border:1px solid var(--line);overflow:hidden;flex:none;display:grid;place-items:center;color:var(--muted);font-size:11px;text-align:center}
+.photo-pick .pv img{width:100%;height:100%;object-fit:cover}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--well);border-radius:12px;padding:6px 9px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;color:var(--muted);min-width:60px;font-weight:600}
+.chip.h{flex-direction:row}
+.chip[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);background:rgba(232,194,106,.08)}
+.chip canvas{width:28px;height:28px}
+.measure-cta{display:flex;gap:10px;align-items:center;border:1px solid var(--line-2);border-radius:14px;padding:10px 12px;background:rgba(232,194,106,.06);text-align:left;width:100%}
+.measure-cta svg{width:26px;height:26px;color:var(--gold);flex:none}
+.measure-cta b{display:block;font-size:14px}
+.measure-cta small{color:var(--muted);font-size:12px}
+
+/* measure */
+.mwrap{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:#000;touch-action:none}
+.mwrap canvas{display:block;width:100%;touch-action:none}
+.mlegend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin:10px 0}
+.mlegend button{border:1px solid var(--line);background:var(--well);border-radius:12px;padding:7px 6px;text-align:left;min-width:0}
+.mlegend button[aria-pressed="true"]{border-color:currentColor}
+.mlegend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.mlegend span{font-size:11px;color:var(--muted);display:block}
+.mlegend b{font-family:var(--f-brand);font-size:19px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.tips{font-size:12.5px;color:var(--muted);margin:0;padding-left:18px}
+.tips li{margin:2px 0}
+
+/* editor */
+.modelbar{display:flex;align-items:center;gap:12px;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:16px;padding:8px 12px 8px 8px;margin-bottom:12px}
+.modelbar img,.modelbar .noimg{width:42px;height:54px;object-fit:cover;border-radius:9px;background:var(--well);flex:none}
+.modelbar select{background:transparent;border:0;color:var(--text);font-weight:700;width:100%;padding:0;font-size:15px}
+.size{font-family:var(--f-brand);font-weight:700;color:var(--gold);font-size:14px;letter-spacing:.05em;font-variant-numeric:tabular-nums}
+.stage{background:repeating-conic-gradient(from 0deg at 50% 45%,rgba(255,214,120,.07) 0deg 4deg,transparent 4deg 10deg),radial-gradient(70% 70% at 50% 45%,#8a1426,#2b040c);border:1px solid var(--line);border-radius:20px;display:flex;align-items:center;justify-content:center;padding:22px 16px 30px;position:relative;touch-action:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.stage{overflow:visible}.stage canvas{display:block;touch-action:none;filter:drop-shadow(0 18px 24px rgba(0,0,0,.55))}
+.dims{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-family:var(--f-brand);font-weight:700;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums;letter-spacing:.12em}
+.hintline{font-size:12.5px;color:var(--muted);margin:8px 2px 12px;text-align:center}
+
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--well);border:1px solid var(--line);border-radius:14px;padding:4px;margin-bottom:10px}
+.seg button{border:0;background:transparent;border-radius:10px;padding:8px 2px;color:var(--muted);font-size:13px;font-weight:600}
+.seg button[aria-selected="true"]{background:var(--surface-2);color:var(--gold);box-shadow:inset 0 0 0 1px var(--line-2)}
+.panel{background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.mic{display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line-2);background:rgba(232,194,106,.06);border-radius:12px;padding:9px 11px;font-size:12.5px;color:var(--gold-hi)}
+.mic svg{flex:none;width:18px;height:18px;margin-top:1px}
+.tpl{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tpl button{border:1px solid var(--line);background:var(--well);border-radius:12px;padding:10px 4px 8px;font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;gap:3px;align-items:center;font-weight:600}
+.tpl button b{font-size:17px;color:var(--text);font-weight:400;line-height:1.2}
+.tpl button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);background:rgba(232,194,106,.07)}
+.fonts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.fonts button{border:1px solid var(--line);background:var(--well);border-radius:10px;padding:7px 9px;text-align:left;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fonts button small{font-size:10.5px;color:var(--muted);font-family:var(--f-ui);margin-left:4px}
+.fonts button[aria-pressed="true"]{border-color:var(--gold);background:rgba(232,194,106,.08)}
+.sw{display:flex;gap:8px;flex-wrap:wrap}
+.sw button{width:32px;height:32px;border-radius:50%;border:1px solid rgba(255,255,255,.18);padding:0;display:grid;place-items:center}
+.sw button[aria-pressed="true"]{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--gold)}
+.bgsw button{width:auto;height:auto;border-radius:12px;padding:0;overflow:hidden;display:flex;flex-direction:column;align-items:center;font-size:11px;color:var(--muted);background:var(--well);border:1px solid var(--line)}
+.bgsw button[aria-pressed="true"]{box-shadow:none;border-color:var(--gold);color:var(--gold)}
+.bgsw button i{display:block;width:56px;height:36px}
+.bgsw button span{padding:3px 4px;font-weight:600}
+input[type=range]{width:100%;accent-color:var(--gold)}
+.lbl{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;font-weight:600;letter-spacing:.04em}
+.layerlist{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
+.layerlist button{flex:none;border:1px solid var(--line);background:var(--well);border-radius:20px;padding:5px 12px;font-size:12.5px;max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.layerlist button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.actions .wide{grid-column:1/-1}
+.empty{color:var(--muted);font-size:13px;padding:6px 0}
+
+/* lists */
+.dlist{display:flex;flex-direction:column;gap:8px}
+.ditem{display:flex;gap:12px;align-items:center;background:linear-gradient(180deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:14px;padding:9px}
+.ditem img{width:52px;height:68px;object-fit:contain;background:var(--well);border-radius:8px;flex:none}
+.ditem .t{flex:1;min-width:0}
+.ditem .t b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ditem .t small{color:var(--muted)}
+.avatar{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:800;color:#2a1604;background:var(--gold-grad);font-size:15px}
+.num{font-variant-numeric:tabular-nums;user-select:all}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(92px + env(safe-area-inset-bottom,0px));background:var(--gold-grad);color:#2a1604;padding:9px 18px;border-radius:30px;font-weight:800;z-index:60;font-size:13.5px;max-width:90vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:rgba(200,16,46,.12);border:1px solid rgba(226,50,77,.4);border-radius:12px;padding:8px 10px;font-size:13.5px}
+.preview-img{max-width:100%;max-height:56vh;display:block;margin:0 auto;border-radius:8px;background:repeating-conic-gradient(#ddd 0 25%,#fff 0 50%) 0 0/16px 16px}
+.step{display:flex;gap:10px;align-items:flex-start}
+.step .n{width:24px;height:24px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:12px;font-weight:800;border:1px solid var(--gold);color:var(--gold);margin-top:2px}
+.step .body{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}
+.step h3{margin:0;font-size:15px;font-weight:700}
+.step p{margin:0;color:var(--muted);font-size:12.5px}
+.sendthumb{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.sendthumb img{width:64px;height:82px;object-fit:contain;border-radius:8px;background:var(--well);border:1px solid var(--line)}
+.clist{display:flex;flex-direction:column;gap:6px}
+.citem{display:flex;gap:10px;align-items:center;border:1px solid var(--line);background:var(--well);border-radius:12px;padding:7px 8px}
+.citem .t{flex:1;min-width:0}
+.citem .t b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.citem .t small{color:var(--muted);font-size:12px}
+/* inline voice + floating toolbar + font sheet + ready designs */
+.inwrap{position:relative;display:block}
+.inwrap .inp{padding-right:50px}
+.micbtn{position:absolute;right:6px;top:6px;width:36px;height:36px;border-radius:50%;border:0;display:grid;place-items:center;background:var(--gold-grad);color:#3a0610;box-shadow:0 3px 10px rgba(0,0,0,.35)}
+.micbtn svg{width:18px;height:18px}
+.micbtn.on{background:#fff;color:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.6)}100%{box-shadow:0 0 0 12px rgba(255,255,255,0)}}
+.langs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.langs button{border:1px solid var(--line-2);background:transparent;border-radius:20px;padding:2px 10px;font-size:12px;color:var(--gold-hi)}
+.langs button[aria-pressed="true"]{background:var(--gold-grad);color:#3a0610;border-color:transparent;font-weight:700}
+.ftool{position:absolute;z-index:5;display:flex;align-items:center;gap:2px;padding:4px;border-radius:14px;background:rgba(43,4,12,.94);border:1px solid var(--gold);box-shadow:0 10px 26px rgba(0,0,0,.55);white-space:nowrap}
+.ftool button{border:0;background:transparent;color:var(--text);min-width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:800;font-size:13px;padding:0 6px}
+.ftool button:active{background:rgba(255,255,255,.12)}
+.ftool button svg{width:18px;height:18px}
+.ftool .val{font-family:var(--f-brand);font-weight:700;color:var(--gold-hi);font-size:13px;min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
+.ftool .sep{width:1px;height:22px;background:var(--line-2);margin:0 2px}
+.ftool .del{color:var(--danger)}
+.fontpick{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;border:1px solid var(--line-2);background:var(--well);border-radius:12px;padding:10px 12px;font-size:20px;text-align:left}
+.fontpick small{font-family:var(--f-ui);font-size:12px;color:var(--muted)}
+.flist{display:flex;flex-direction:column;gap:6px}
+.flist button{display:flex;flex-direction:column;align-items:flex-start;gap:0;border:1px solid var(--line);background:var(--well);border-radius:12px;padding:8px 12px;text-align:left;min-width:0}
+.flist button span{font-size:24px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.flist button small{font-size:11px;color:var(--muted);letter-spacing:.04em}
+.flist button[aria-pressed="true"]{border-color:var(--gold);background:rgba(246,206,116,.12)}
+.ready{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ready button{border:1px solid var(--line);background:var(--well);border-radius:12px;padding:8px 6px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);font-weight:700;min-width:0}
+.ready button canvas{max-width:100%;height:auto;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4))}
+.ready button[aria-pressed="true"]{border-color:var(--gold);color:var(--gold);background:rgba(246,206,116,.1)}
+.pricebadge{position:absolute;right:8px;top:8px;z-index:1;background:var(--gold-grad);color:#3a0610;font-weight:800;font-size:11.5px;padding:1px 8px;border-radius:20px}
+.ocr{display:flex;gap:10px;align-items:center;border:1px dashed var(--gold);border-radius:12px;padding:9px 12px;background:rgba(246,206,116,.06);cursor:pointer}
+.ocr svg{width:24px;height:24px;color:var(--gold);flex:none}
+.ocr b{display:block;font-size:14px}
+.ocr small{color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="brand">
+    <img id="logo" alt="Disni logo">
+    <div><h1>Disni Trophies</h1><small>Design Studio</small></div>
+  </header>
+
+  <!-- MODELS -->
+  <section id="v-models">
+    <p class="eyebrow">Collection</p>
+    <h2>Trophy Models</h2>
+    <p class="sub">ഷെൽഫിലെ ഓരോ model-ന്റെയും photo എടുത്ത്, print area-യുടെ size (mm) save ചെയ്യൂ.</p>
+    <div class="grid" id="modelGrid"></div>
+  </section>
+
+  <!-- DESIGN -->
+  <section id="v-design" hidden>
+    <div class="modelbar">
+      <img id="mbImg" alt="" hidden><div class="noimg" id="mbNo"></div>
+      <div class="grow">
+        <select id="modelSel" aria-label="Model"></select>
+        <div class="size" id="mbSize"></div>
+      </div>
+    </div>
+    <div class="stage" id="stage"><canvas id="cv"></canvas><div class="ftool" id="ftool" hidden></div><span class="dims" id="dims"></span></div>
+    <p class="hintline">Tap: select · Drag: നീക്കാം · രണ്ട് വിരൽ കൊണ്ട് pinch: വലുതാക്കാം / ചെറുതാക്കാം</p>
+
+    <div class="seg" role="tablist" id="seg">
+      <button data-p="quick" aria-selected="true">Details</button>
+      <button data-p="text">Text</button>
+      <button data-p="photo">Photo</button>
+      <button data-p="bg">Style</button>
+    </div>
+
+    <div class="panel" id="p-quick">
+      <div class="mic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg><div><span>ഓരോ box-ന്റെയും gold mic അമർത്തി പറയൂ. Voice language:</span><div class="langs" id="langs"></div></div></div>
+      <label class="ocr" id="ocrBtn" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span><b>Photo-യിൽ നിന്ന് text</b><small>Order slip, കൈയക്ഷരം, പഴയ trophy — photo എടുത്താൽ details തനിയെ നിറയും</small></span><input type="file" id="ocrFile" accept="image/*" hidden></label>
+      <div class="tpl" id="tplPick">
+        <button data-t="classic"><b style="font-family:'Great Vibes',cursive">Congrats</b>Classic</button>
+        <button data-t="mal"><b style="font-family:'Baloo Chettan 2';font-weight:800">അഭിനന്ദനം</b>മലയാളം</button>
+        <button data-t="rank"><b style="font-family:Anton">FIRST</b>Rank</button>
+      </div>
+      <div class="fields">
+        <label class="f">Heading <span class="inwrap"><input class="inp" id="fHead" placeholder="Congratulations / FIRST PRIZE"><button type="button" class="micbtn" data-for="fHead" aria-label="Voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></span></label>
+        <label class="f">പേര് · Name <span class="inwrap"><input class="inp" id="fName" placeholder="ഉദാ: Zakhariya Mangattayil"><button type="button" class="micbtn" data-for="fName" aria-label="Voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></span></label>
+        <label class="f">Award / വിവരണം <span class="inwrap"><textarea class="inp" id="fDet" rows="3" placeholder="ഉദാ: Best Teacher Award 2026"></textarea><button type="button" class="micbtn" data-for="fDet" aria-label="Voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></span></label>
+        <label class="f">Presented by · നൽകുന്നത് <span class="inwrap"><input class="inp" id="fBy" placeholder="ഉദാ: ICC Muroor"><button type="button" class="micbtn" data-for="fBy" aria-label="Voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></span></label>
+      </div>
+      <button class="btn primary" id="applyTpl">Design ഉണ്ടാക്കൂ</button>
+    </div>
+
+    <div class="panel" id="p-text" hidden>
+      <div class="layerlist" id="textLayers"></div>
+      <label class="f">Text <span class="inwrap"><textarea class="inp" id="tText" rows="2" placeholder="Type ചെയ്യൂ, അല്ലെങ്കിൽ mic അമർത്തി പറയൂ"></textarea><button type="button" class="micbtn" data-for="tText" aria-label="Voice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button></span></label>
+      <div class="row"><button class="btn sm" id="addText">+ New text</button><span class="grow"></span><button class="btn sm danger" id="delText">Remove</button></div>
+      <div id="textCtl">
+        <div class="lbl" style="margin-bottom:6px">FONT</div>
+        <button class="fontpick" id="fontBtn" type="button"><span id="fontBtnName">Font</span><small>മാറ്റാൻ tap ചെയ്യൂ ›</small></button>
+        <div class="lbl" style="margin-top:14px"><span>SIZE</span><span id="szVal"></span></div>
+        <input type="range" id="tSize" min="2" max="30" step="0.5">
+        <div class="lbl" style="margin:12px 0 8px">COLOUR</div>
+        <div class="sw" id="colorSw"></div>
+        <div class="row" style="margin-top:14px">
+          <button class="btn sm" id="tBold">Bold</button>
+          <button class="btn sm" id="tShadow">Shadow</button>
+          <button class="btn sm" id="tCenter">Center</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-photo" hidden>
+      <div class="layerlist" id="imgLayers"></div>
+      <div class="row">
+        <label class="btn sm">+ ആളുടെ Photo<input type="file" id="addPhoto" accept="image/*" hidden></label>
+        <label class="btn sm">+ Logo<input type="file" id="addLogo" accept="image/*" hidden></label>
+      </div>
+      <div id="imgCtl">
+        <div class="lbl" style="margin-bottom:6px">FRAME</div>
+        <div class="chips" id="frameChips"></div>
+        <div class="lbl" style="margin-top:14px"><span>SIZE</span><span id="iszVal"></span></div>
+        <input type="range" id="iSize" min="8" max="100" step="1">
+        <div class="lbl" style="margin:12px 0 8px">BORDER</div>
+        <div class="sw" id="ringSw"></div>
+        <div class="row" style="margin-top:14px"><button class="btn sm" id="iCenter">Center</button><span class="grow"></span><button class="btn sm danger" id="delImg">Remove</button></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-bg" hidden>
+      <div class="row"><div class="lbl grow">READY DESIGNS · tap ചെയ്ത് മാറ്റൂ</div><button class="btn sm" id="bgAuto" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l1.8 4.7L18.5 9l-4.7 1.8L12 15.5l-1.8-4.7L5.5 9l4.7-1.3zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg>Auto select</button></div>
+      <p class="sub" id="bgAutoNote" style="margin:-6px 0 0" hidden></p>
+      <div class="ready" id="bgSw"></div>
+      <div class="lbl">OWN IMAGE · Google / Gallery</div>
+      <div class="row">
+        <label class="btn sm">+ Gallery-ൽ നിന്ന്<input type="file" id="bgFile" accept="image/*" hidden></label>
+        <a class="btn sm" id="bgGoogle" href="#" target="_blank" rel="noopener">Google-ൽ തിരയൂ</a>
+      </div>
+      <p class="sub" style="margin:-4px 0 0">Google-ൽ ഇഷ്ടപ്പെട്ട background download ചെയ്ത്, "Gallery-ൽ നിന്ന്" വഴി ചേർക്കൂ. Print-ന് വലിയ (HD) image തിരഞ്ഞെടുക്കൂ.</p>
+      <div id="dimWrap" hidden><div class="lbl"><span>IMAGE DARKEN</span><span id="dimVal"></span></div><input type="range" id="bgDim" min="0" max="0.7" step="0.05"></div>
+      <div class="lbl">BORDER LINE</div>
+      <div class="chips" id="borderChips"></div>
+      <div class="sw" id="borderColorSw"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" id="saveDesign"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>Save</button>
+      <button class="btn red" id="exportPng"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14"/></svg>Print PNG</button>
+      <button class="btn wa wide" id="sendWa"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8s-.4-.1-.6.1-.7.8-.8 1-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.6 11.6 0 0 0 4.4 3.9c1.6.7 2.3.8 3.1.6a2.7 2.7 0 0 0 1.8-1.2 2.2 2.2 0 0 0 .1-1.2c0-.1-.2-.2-.4-.3z"/></svg>WhatsApp-ൽ അയക്കൂ</button>
+    </div>
+  </section>
+
+  <!-- SAVED -->
+  <section id="v-saved" hidden>
+    <p class="eyebrow">Library</p>
+    <h2>Saved Designs</h2>
+    <div class="dlist" id="dlist"></div>
+    <div class="rule"></div>
+    <p class="eyebrow">WhatsApp</p>
+    <h2>Contacts</h2>
+    <p class="sub">Customer-ഉം printer-ഉം ആയ numbers ഇവിടെ save ചെയ്താൽ ഒറ്റ tap-ൽ അയക്കാം.</p>
+    <div class="clist" id="contactList"></div>
+    <div class="fields" style="margin-top:10px">
+      <div class="two"><label class="f">Name <input class="inp" id="cName" placeholder="ഉദാ: Ansar School"></label>
+      <label class="f">WhatsApp No. <input class="inp" id="cNum" type="tel" inputmode="tel" placeholder="98470 12345"></label></div>
+      <button class="btn sm" id="cAdd">+ Contact save ചെയ്യൂ</button>
+    </div>
+    <div class="rule"></div>
+    <p class="eyebrow">Backup</p>
+    <h2>Data Backup</h2>
+    <p class="sub">എല്ലാം ഈ phone-ൽ ആണ് സൂക്ഷിക്കുന്നത്. ഇടയ്ക്ക് backup file എടുത്തു വയ്ക്കൂ.</p>
+    <div class="row"><button class="btn sm" id="backup">Backup എടുക്കൂ</button><label class="btn sm">Backup restore<input type="file" id="restore" accept=".json,application/json" hidden></label></div>
+  </section>
+</div>
+
+<nav class="tabs"><div class="in" role="tablist">
+  <button data-v="models" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 4h10v4a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4M12 13v4M9 17h6v4H9z"/></svg>Models</button>
+  <button data-v="design"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4zM14 6l3 3"/></svg>Design</button>
+  <button data-v="saved"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>Saved</button>
+</div></nav>
+
+<div id="sheetRoot"></div>
+
+<script>
+const IMG = __IMGS__;
+document.getElementById('logo').src = IMG.logo;
+
+/* ---------- storage (IndexedDB on this phone) ---------- */
+const store = (() => {
+  let dbp = null, mem = {};
+  function open(){ if(dbp) return dbp; dbp = new Promise((res)=>{ try{ const r=indexedDB.open('disni-studio',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>res(r.result); r.onerror=()=>res(null);}catch(e){res(null)} }); return dbp; }
+  return {
+    async get(k){ const db=await open(); if(!db) return mem[k]; return new Promise(res=>{ try{ const q=db.transaction('kv').objectStore('kv').get(k); q.onsuccess=()=>res(q.result); q.onerror=()=>res(mem[k]); }catch(e){res(mem[k])} }); },
+    async set(k,v){ mem[k]=v; const db=await open(); if(!db) return; try{ db.transaction('kv','readwrite').objectStore('kv').put(v,k);}catch(e){} }
+  };
+})();
+
+/* ---------- constants ---------- */
+const FONTS = [
+  ['Great Vibes','Script'],['Allura','Script'],['Tangerine','Script'],['Dancing Script','Script'],['Satisfy','Script'],['Pacifico','Script'],['Courgette','Script'],['Lobster','Script'],
+  ['Oswald','Bold'],['Anton','Bold'],['Bebas Neue','Bold'],['Righteous','Bold'],['Montserrat','Clean'],['Poppins','Clean'],
+  ['Playfair Display','Classic'],['Abril Fatface','Classic'],['Cinzel','Classic'],['Cinzel Decorative','Classic'],['Marcellus','Classic'],
+  ['Noto Sans Malayalam','മലയാളം'],['Anek Malayalam','മലയാളം'],['Baloo Chettan 2','മലയാളം'],['Manjari','മലയാളം'],['Gayathri','മലയാളം'],['Noto Serif Malayalam','മലയാളം'],['Chilanka','മലയാളം']
+];
+const FONT_WEIGHT_400 = ['Great Vibes','Allura','Satisfy','Pacifico','Courgette','Lobster','Anton','Bebas Neue','Righteous','Abril Fatface','Marcellus','Chilanka'];
+const MAL_FALLBACK = '"Noto Sans Malayalam","Manjari"';
+const COLORS = ['#c8102e','#1b2b6b','#1d63b8','#111111','#ffffff','#e8c26a','#b8860b','#0f7a3e','#7a0718','#e85d9b'];
+const SHAPES = [['rect','Rectangle'],['rounded','Rounded'],['octagon','Octagon'],['circle','Circle'],['arch','Arch'],['plaque','Shield']];
+const BGS = {
+  silver:{name:'Silver', stops:['#f1f2f5','#c4c8d0'], sparkle:true, pal:{head:'#c8102e',name:'#1b2b6b',body:'#1a1a1a'}},
+  gold:{name:'Gold', stops:['#fbe7a1','#d19a1d'], sparkle:true, pal:{head:'#7a0718',name:'#3a1300',body:'#2b1a00'}},
+  crimson:{name:'Crimson', stops:['#d4173a','#7a0718'], radial:true, pal:{head:'#f6d66b',name:'#ffffff',body:'#ffeccc'}},
+  white:{name:'White', stops:['#ffffff','#ffffff'], pal:{head:'#c8102e',name:'#1b2b6b',body:'#222222'}},
+  royal:{name:'Royal', stops:['#2347a8','#0c1c4d'], radial:true, pal:{head:'#f2c94c',name:'#ffffff',body:'#e8eefc'}},
+  black:{name:'Black', stops:['#2a2a2a','#0b0b0b'], radial:true, pal:{head:'#e8c26a',name:'#ffffff',body:'#dddddd'}},
+  clear:{name:'Glass', stops:null, pal:{head:'#1d63b8',name:'#c8102e',body:'#111111'}},
+  rays:{name:'Gold Rays', stops:['#d4173a','#6e0616'], radial:true, deco:'rays', pal:{head:'#f6d66b',name:'#ffffff',body:'#ffeccc'}},
+  swoosh:{name:'Ribbon', stops:['#f6f7f9','#d9dce2'], sparkle:true, deco:'swoosh', pal:{head:'#c8102e',name:'#1b2b6b',body:'#1a1a1a'}},
+  laurel:{name:'Laurel', stops:['#fffaf0','#f1e3c2'], deco:'laurel', pal:{head:'#8a5a00',name:'#3a1e00',body:'#3b2a14'}},
+  stars:{name:'Stars', stops:['#1f3f9e','#091640'], radial:true, deco:'stars', pal:{head:'#f2c94c',name:'#ffffff',body:'#e8eefc'}},
+  confetti:{name:'Confetti', stops:['#ffffff','#f3f3f6'], deco:'confetti', pal:{head:'#c8102e',name:'#1b2b6b',body:'#222222'}},
+  royalframe:{name:'Gold Frame', stops:['#262019','#0b0907'], radial:true, deco:'frame', pal:{head:'#e8c26a',name:'#ffffff',body:'#e6dccb'}},
+  photo:{name:'My Image', stops:null, image:true, pal:{head:'#ffffff',name:'#ffffff',body:'#ffffff'}}
+};
+const BG_HINT = {silver:'school, general',gold:'first prize, gold medal',crimson:'sports, bold',white:'simple, office',royal:'corporate, academic',black:'premium, corporate',clear:'glass trophies',rays:'winners, championship',swoosh:'school, youth, cultural fest',laurel:'achievement, honour, retirement',stars:'excellence, star performer',confetti:'celebration, birthday, kids',royalframe:'VIP, golden visa, felicitation'};
+const FRAMES = [['rect','Square'],['round','Rounded'],['arch','Arch'],['circle','Circle'],['none','No frame']];
+const REFS = [['card','ATM / ID card (നീളം)',85.6],['a4','A4 paper (വീതി)',210],['coin10','₹10 coin',27],['custom','Scale / വേറെ (mm)',null]];
+const uid = () => Math.random().toString(36).slice(2,9);
+
+/* ---------- state ---------- */
+let models = [], designs = [], contacts = [], cur = null, sel = null, view = 'models';
+
+function sampleModels(){
+  return [
+    {id:'ex1', name:'Glass Frame Award', wmm:75, hmm:150, shape:'rect', photo:IMG.m1, example:true},
+    {id:'ex2', name:'Wooden Shield – label', wmm:60, hmm:35, shape:'rect', photo:IMG.m2, example:true},
+    {id:'ex3', name:'Octagon Acrylic', wmm:120, hmm:120, shape:'octagon', photo:null, example:true}
+  ];
+}
+function newDesign(model){
+  return {id:uid(), name:'', modelId:model.id, wmm:model.wmm, hmm:model.hmm, shape:model.shape,
+    bg:'silver', border:'double', borderColor:'#c8102e', tpl:'classic',
+    fields:{head:'', name:'', det:'', by:''}, layers:[]};
+}
+
+/* ---------- geometry ---------- */
+function shapePath(ctx, shape, x, y, w, h){
+  ctx.beginPath();
+  const m = Math.min(w,h);
+  if(shape==='rounded'){ const r=m*0.08; rr(ctx,x,y,w,h,r); }
+  else if(shape==='octagon'){ const c=m*0.293; ctx.moveTo(x+c,y); ctx.lineTo(x+w-c,y); ctx.lineTo(x+w,y+c); ctx.lineTo(x+w,y+h-c); ctx.lineTo(x+w-c,y+h); ctx.lineTo(x+c,y+h); ctx.lineTo(x,y+h-c); ctx.lineTo(x,y+c); ctx.closePath(); }
+  else if(shape==='circle'){ ctx.ellipse(x+w/2,y+h/2,w/2,h/2,0,0,Math.PI*2); }
+  else if(shape==='arch'){ const r=Math.min(w/2,h*0.5); ctx.moveTo(x,y+h); ctx.lineTo(x,y+r); ctx.ellipse(x+w/2,y+r,w/2,r,0,Math.PI,0); ctx.lineTo(x+w,y+h); ctx.closePath(); }
+  else if(shape==='plaque'){ ctx.moveTo(x+w*.1,y); ctx.lineTo(x+w*.9,y); ctx.lineTo(x+w,y+h*.12); ctx.lineTo(x+w*.88,y+h); ctx.lineTo(x+w*.12,y+h); ctx.lineTo(x,y+h*.12); ctx.closePath(); }
+  else ctx.rect(x,y,w,h);
+}
+function rr(ctx,x,y,w,h,r){ ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+
+const imgCache = {};
+function getImg(src){ if(!src) return null; if(imgCache[src]) return imgCache[src]; const im=new Image(); im.onload=()=>draw(); im.src=src; imgCache[src]=im; return im; }
+function rng(seed){ return ()=>{ seed=(seed*16807)%2147483647; return seed/2147483647; }; }
+
+/* ---------- renderer (screen and print) ---------- */
+function render(ctx, d, W, H, opt={}){
+  const boxes = [];
+  ctx.save();
+  ctx.clearRect(0,0,W,H);
+  if(opt.screen){ ctx.fillStyle='rgba(255,255,255,0.035)'; ctx.fillRect(0,0,W,H); }
+  shapePath(ctx,d.shape,0,0,W,H);
+  ctx.save(); ctx.clip();
+  const bg = BGS[d.bg]||BGS.silver;
+  if(bg.stops){
+    const g = bg.radial ? ctx.createRadialGradient(W/2,H*0.4,0,W/2,H/2,Math.max(W,H)*0.75) : ctx.createLinearGradient(0,0,W*0.4,H);
+    g.addColorStop(0,bg.stops[0]); g.addColorStop(1,bg.stops[1]);
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+    if(bg.sparkle){ const r=rng(7); const n=Math.round(W*H/180*(opt.print?0.3:1)); const s=Math.max(.6,W/500);
+      for(let i=0;i<Math.min(n,40000);i++){ ctx.fillStyle=`rgba(255,255,255,${0.25+r()*0.55})`; ctx.fillRect(r()*W,r()*H,s,s); } }
+  } else if(bg.image && d.bgImg){
+    const im=getImg(d.bgImg); if(im&&im.complete&&im.naturalWidth){ const s=Math.max(W/im.naturalWidth,H/im.naturalHeight); const iw=im.naturalWidth*s, ih=im.naturalHeight*s; ctx.drawImage(im,(W-iw)/2,(H-ih)/2,iw,ih);
+      if(d.bgDim){ ctx.fillStyle=`rgba(0,0,0,${d.bgDim})`; ctx.fillRect(0,0,W,H); } }
+  } else if(opt.screen){
+    const g=ctx.createLinearGradient(0,0,W,H); g.addColorStop(0,'rgba(225,238,242,.94)'); g.addColorStop(1,'rgba(190,210,218,.94)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  }
+  if(bg.deco) DECO[bg.deco](ctx,W,H);
+  for(const L of d.layers){ boxes.push(L.type==='image' ? drawImageLayer(ctx,L,W,H) : drawText(ctx,L,W,H)); }
+  ctx.restore();
+  if(d.border!=='none'){
+    const m=Math.min(W,H); ctx.strokeStyle=d.borderColor; const ins=m*0.04;
+    ctx.lineWidth=Math.max(1,m*0.008);
+    shapePath(ctx,d.shape,ins,ins,W-ins*2,H-ins*2); ctx.stroke();
+    if(d.border==='double'){ const i2=ins+m*0.022; ctx.lineWidth=Math.max(.8,m*0.004); shapePath(ctx,d.shape,i2,i2,W-i2*2,H-i2*2); ctx.stroke(); }
+  }
+  if(opt.screen){
+    shapePath(ctx,d.shape,0,0,W,H); ctx.strokeStyle='rgba(232,194,106,.5)'; ctx.lineWidth=1; ctx.stroke();
+    const b = boxes.find(b=>b.id===sel);
+    if(b){ ctx.setLineDash([5,4]); ctx.strokeStyle='#e8c26a'; ctx.lineWidth=1.5; ctx.strokeRect(b.x-3,b.y-3,b.w+6,b.h+6); ctx.setLineDash([]); }
+    if(opt.guide){ ctx.strokeStyle='rgba(232,194,106,.85)'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.stroke(); }
+  }
+  ctx.restore();
+  return boxes;
+}
+/* ---------- decorative backgrounds (drawn, so they print sharp at any size) ---------- */
+function star(ctx,x,y,r,rot){ ctx.beginPath(); for(let i=0;i<10;i++){ const a=rot+i*Math.PI/5-Math.PI/2, rr=i%2?r*.45:r; ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);} ctx.closePath(); ctx.fill(); }
+const DECO = {
+  rays(ctx,W,H){ const cx=W/2, cy=H*.42, R=Math.hypot(W,H); ctx.save(); ctx.fillStyle='rgba(255,214,110,.10)';
+    for(let i=0;i<32;i+=2){ const a1=i*Math.PI/16, a2=(i+1)*Math.PI/16; ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,a1,a2); ctx.closePath(); ctx.fill(); }
+    const g=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.min(W,H)*.5); g.addColorStop(0,'rgba(255,220,120,.35)'); g.addColorStop(1,'rgba(255,220,120,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); ctx.restore(); },
+  swoosh(ctx,W,H){ const band=(y0,flip,cols)=>{ cols.forEach((c,i)=>{ const off=i*H*.018; ctx.beginPath();
+      if(!flip){ ctx.moveTo(-W*.1,y0+off); ctx.bezierCurveTo(W*.3,y0-H*.08+off,W*.6,y0+H*.06+off,W*1.1,y0-H*.04+off); ctx.lineTo(W*1.1,y0-H*.01+off); ctx.bezierCurveTo(W*.6,y0+H*.085+off,W*.3,y0-H*.05+off,-W*.1,y0+H*.03+off); }
+      else { ctx.moveTo(-W*.1,y0-off); ctx.bezierCurveTo(W*.4,y0+H*.07-off,W*.7,y0-H*.06-off,W*1.1,y0+H*.03-off); ctx.lineTo(W*1.1,y0+H*.06-off); ctx.bezierCurveTo(W*.7,y0-H*.03-off,W*.4,y0+H*.1-off,-W*.1,y0+H*.03-off); }
+      ctx.closePath(); ctx.fillStyle=c; ctx.fill(); }); };
+    band(H*.07,false,['rgba(242,201,76,.85)','rgba(232,93,155,.75)','rgba(155,89,182,.7)']);
+    band(H*.88,true,['rgba(155,89,182,.7)','rgba(232,93,155,.75)','rgba(242,201,76,.85)']); },
+  laurel(ctx,W,H){ const m=Math.min(W,H); const branch=(side)=>{ const cx=W/2, cy=H*.62, R=Math.min(W*.42,H*.36);
+      ctx.strokeStyle='#b8862b'; ctx.lineWidth=m*.008; ctx.beginPath(); ctx.arc(cx,cy,R,side<0?Math.PI*.55:Math.PI*.45,side<0?Math.PI*1.25:-Math.PI*.25,side>0); ctx.stroke();
+      for(let i=0;i<11;i++){ const t=side<0? Math.PI*.58+i*.065*Math.PI : Math.PI*.42-i*.065*Math.PI; const x=cx+Math.cos(t)*R, y=cy+Math.sin(t)*R;
+        for(const o of [-1,1]){ ctx.save(); ctx.translate(x,y); ctx.rotate(t+(side<0?Math.PI/2:-Math.PI/2)+o*.55); const g=ctx.createLinearGradient(0,-m*.05,0,0); g.addColorStop(0,'#f3d27a'); g.addColorStop(1,'#a87318'); ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(0,-m*.032,m*.014,m*.034,0,0,Math.PI*2); ctx.fill(); ctx.restore(); } } };
+    ctx.save(); ctx.globalAlpha=.55; branch(-1); branch(1); ctx.restore(); },
+  stars(ctx,W,H){ const r=rng(11), m=Math.min(W,H); ctx.save(); for(let i=0;i<46;i++){ const x=r()*W, y=r()*H; ctx.fillStyle=`rgba(242,201,76,${.25+r()*.6})`; star(ctx,x,y,m*(.008+r()*.025),r()*Math.PI); }
+    const g=ctx.createRadialGradient(W/2,H*.4,0,W/2,H*.4,m*.55); g.addColorStop(0,'rgba(120,160,255,.25)'); g.addColorStop(1,'rgba(120,160,255,0)'); ctx.fillStyle=g; ctx.fillRect(0,0,W,H); ctx.restore(); },
+  confetti(ctx,W,H){ const r=rng(5), m=Math.min(W,H), cols=['#c8102e','#f2b81c','#1d63b8','#0f9d58','#e85d9b','#9b59b6']; ctx.save();
+    for(let i=0;i<90;i++){ const x=r()*W, y=r()*H; if(x>W*.15&&x<W*.85&&y>H*.15&&y<H*.85&&r()<.85) continue; ctx.fillStyle=cols[Math.floor(r()*cols.length)]; ctx.save(); ctx.translate(x,y); ctx.rotate(r()*Math.PI); ctx.fillRect(-m*.012,-m*.005,m*.024,m*.01); ctx.restore(); } ctx.restore(); },
+  frame(ctx,W,H){ const m=Math.min(W,H), ins=m*.08, L=m*.16; ctx.save(); ctx.strokeStyle='#d9b45c'; ctx.fillStyle='#d9b45c'; ctx.lineWidth=m*.006;
+    for(const [sx,sy] of [[1,1],[-1,1],[1,-1],[-1,-1]]){ const x=sx>0?ins:W-ins, y=sy>0?ins:H-ins;
+      ctx.beginPath(); ctx.moveTo(x,y+sy*L); ctx.lineTo(x,y); ctx.lineTo(x+sx*L,y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x+sx*m*.03,y+sy*L*.7); ctx.quadraticCurveTo(x+sx*m*.03,y+sy*m*.03,x+sx*L*.7,y+sy*m*.03); ctx.stroke();
+      ctx.save(); ctx.translate(x,y); ctx.rotate(Math.PI/4); ctx.fillRect(-m*.012,-m*.012,m*.024,m*.024); ctx.restore(); }
+    ctx.restore(); }
+};
+function fontStr(L,px){ return `${L.italic?'italic ':''}${L.weight||400} ${px}px "${L.font}", ${MAL_FALLBACK}, sans-serif`; }
+function drawText(ctx,L,W,H){
+  const px = L.size/100*W;
+  ctx.font = fontStr(L,px); ctx.textAlign='center'; ctx.textBaseline='middle';
+  const maxW = (L.maxW||0.86)*W, lines=[];
+  for(const para of String(L.text||'').split('\n')){
+    const words=para.split(' '); let line='';
+    for(const w of words){ const t=line?line+' '+w:w; if(ctx.measureText(t).width>maxW && line){ lines.push(line); line=w; } else line=t; }
+    lines.push(line);
+  }
+  const lh = px*(L.lh||1.18), total=lh*lines.length;
+  const cx=L.x*W, cy=L.y*H, top=cy-total/2; let wmax=0;
+  ctx.fillStyle=L.color;
+  if(L.shadow){ ctx.shadowColor='rgba(0,0,0,.45)'; ctx.shadowBlur=px*0.12; ctx.shadowOffsetY=px*0.06; }
+  lines.forEach((ln,i)=>{ ctx.fillText(ln,cx,top+lh*(i+.5)); wmax=Math.max(wmax,ctx.measureText(ln).width); });
+  ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+  return {id:L.id,x:cx-wmax/2,y:top,w:wmax,h:total};
+}
+function frameAspect(L,im){ if(L.frame==='circle') return 1; if(L.frame==='none') return im&&im.naturalWidth? im.naturalHeight/im.naturalWidth : 1; return 4/3; }
+function drawImageLayer(ctx,L,W,H){
+  const im=getImg(L.src); const w=L.w/100*W; const h=w*frameAspect(L,im); const x=L.x*W-w/2, y=L.y*H-h/2;
+  ctx.save();
+  if(L.frame!=='none'){
+    shapePath(ctx,{circle:'circle',round:'rounded',arch:'arch'}[L.frame]||'rect',x,y,w,h);
+    ctx.save(); ctx.clip();
+    if(im&&im.complete&&im.naturalWidth){ const s=Math.max(w/im.naturalWidth,h/im.naturalHeight); const iw=im.naturalWidth*s, ih=im.naturalHeight*s; ctx.drawImage(im,x+(w-iw)/2,y+(h-ih)/2,iw,ih); }
+    else { ctx.fillStyle='rgba(0,0,0,.15)'; ctx.fillRect(x,y,w,h); }
+    ctx.restore();
+    if(L.ring && L.ring!=='none'){ ctx.lineWidth=Math.max(1.2,w*0.025); ctx.strokeStyle=L.ring; ctx.stroke(); }
+  } else if(im&&im.complete&&im.naturalWidth){ ctx.drawImage(im,x,y,w,h); }
+  ctx.restore();
+  return {id:L.id,x,y,w,h};
+}
+
+/* ---------- templates ---------- */
+function applyTemplate(){
+  const d=cur, f=d.fields, pal=(BGS[d.bg]||BGS.silver).pal;
+  const imgs=d.layers.filter(l=>l.type==='image');
+  const photo=imgs.find(l=>l.role==='photo');
+  const tall = d.hmm/d.wmm, k = tall<0.8 ? 0.7 : 1;
+  const T=[], add=(o)=>T.push(Object.assign({id:uid(),type:'text',x:.5,maxW:.84,lh:1.18},o));
+  let y;
+  if(d.tpl==='rank'){
+    if(f.by) add({text:f.by,font:'Cinzel',weight:700,size:6*k,color:pal.body,y:.11});
+    add({text:f.head||'FIRST PRIZE',font:'Anton',weight:400,size:15*k,color:pal.head,y:photo?.24:.32,shadow:d.bg!=='clear'&&d.bg!=='white'});
+    if(photo){ photo.x=.5; photo.y=.47; photo.w=Math.min(38,photo.w); }
+    y = photo? .7 : .52;
+    if(f.name){ add({text:f.name,font:'Oswald',weight:700,size:8.5*k,color:pal.name,y}); y+=.12; }
+    if(f.det) add({text:f.det,font:'Montserrat',weight:500,size:5*k,color:pal.body,y});
+  } else {
+    const mal = d.tpl==='mal';
+    add({text:f.head||(mal?'അഭിനന്ദനങ്ങൾ':'Congratulations'),font:mal?'Baloo Chettan 2':'Great Vibes',weight:mal?800:400,size:(mal?10:13)*k,color:pal.head,y:tall<0.8?.17:.1});
+    if(photo){ photo.x=.5; photo.y=tall<0.8?.5:.32; photo.w=tall<0.8?22:Math.min(42,photo.w); }
+    y = photo ? (tall<0.8?.5:.56) : (tall<0.8?.42:.36);
+    if(f.name){ add({text:f.name,font:mal?'Noto Sans Malayalam':'Oswald',weight:700,size:8.5*k,color:pal.name,y}); y+= tall<0.8?.2:.1; }
+    if(f.det) add({text:f.det,font:mal?'Manjari':'Montserrat',weight:mal?700:500,size:5.2*k,color:pal.body,y:y+(f.det.length>40?.04:0)});
+    if(f.by) add({text:f.by,font:mal?'Noto Sans Malayalam':'Montserrat',weight:700,size:4.6*k,color:pal.body,y:tall<0.8?.86:.9});
+  }
+  d.layers = [...imgs, ...T];
+  if(!d.name) d.name = f.name || '';
+  sel = null; persistCur(); draw(); ensureFonts();
+}
+
+/* ---------- fonts ---------- */
+const fontsReady = new Set();
+function ensureFonts(){
+  const need=new Set(cur? cur.layers.filter(l=>l.type==='text').map(l=>`${l.weight||400}|${l.font}`):[]);
+  need.add('400|Noto Sans Malayalam');
+  for(const k of need){ if(fontsReady.has(k)) continue; const [w,f]=k.split('|');
+    document.fonts.load(`${w} 40px "${f}"`,'അAa').then(()=>{fontsReady.add(k); draw();}).catch(()=>{}); }
+}
+if(document.fonts) document.fonts.ready.then(()=>draw());
+
+/* ---------- stage ---------- */
+const $=id=>document.getElementById(id);
+const cv=$('cv'), stage=$('stage');
+let boxes=[], cssW=0, cssH=0, guide=false;
+function sizeStage(){
+  if(!cur) return;
+  const availW = stage.clientWidth-32;
+  const maxH = Math.max(240, Math.min(window.innerHeight*0.5, 480));
+  const ar = cur.wmm/cur.hmm;
+  cssW = Math.min(availW, maxH*ar); cssH = cssW/ar;
+  const dpr = Math.min(3, window.devicePixelRatio||1);
+  cv.style.width=cssW+'px'; cv.style.height=cssH+'px';
+  cv.width=Math.round(cssW*dpr); cv.height=Math.round(cssH*dpr);
+}
+function draw(){
+  if(!cur || view!=='design' || !cssW) return;
+  const ctx=cv.getContext('2d'); const dpr=cv.width/cssW || 1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  boxes = render(ctx,cur,cssW,cssH,{screen:true,guide});
+  placeTool();
+}
+const I = {
+  minus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg>',
+  plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>',
+  edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z"/></svg>',
+  del:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>',
+  frame:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="4"/></svg>'
+};
+function placeTool(){
+  const t=$('ftool'); const L=selLayer(); const b=L&&boxes.find(x=>x.id===L.id);
+  if(!b||drag||pinch){ t.hidden=true; return; }
+  const sig=L.id+L.type;
+  if(t.dataset.sig!==sig){ t.dataset.sig=sig;
+    t.innerHTML = `<button data-a="dn" aria-label="ചെറുതാക്കുക">${I.minus}</button><span class="val" id="ftVal"></span><button data-a="up" aria-label="വലുതാക്കുക">${I.plus}</button><span class="sep"></span>`+
+      (L.type==='text' ? `<button data-a="font">Aa</button><button data-a="edit" aria-label="Edit">${I.edit}</button>` : `<button data-a="frame" aria-label="Frame">${I.frame}</button>`)+
+      `<button data-a="del" class="del" aria-label="Delete">${I.del}</button>`; }
+  $('ftVal').textContent = L.type==='text' ? sizeLabel(L) : Math.round(L.w/100*cur.wmm)+'mm';
+  t.hidden=false;
+  const tw=t.offsetWidth, th=t.offsetHeight, SW=stage.clientWidth, SH=stage.clientHeight;
+  let left=cv.offsetLeft+b.x+b.w/2-tw/2; left=Math.max(4,Math.min(SW-tw-4,left));
+  let top=cv.offsetTop+b.y+b.h+10; if(top+th>SH-2) top=cv.offsetTop+b.y-th-10; top=Math.max(4,Math.min(SH-th-4,top));
+  t.style.left=left+'px'; t.style.top=top+'px';
+}
+function bump(L,f){ if(L.type==='text') L.size=Math.max(1.5,Math.min(40,+(L.size*f).toFixed(2))); else L.w=Math.max(5,Math.min(120,+(L.w*f).toFixed(2))); }
+let holdT=null;
+$('ftool').addEventListener('pointerdown',e=>{ e.stopPropagation(); const b=e.target.closest('button'); if(!b) return; const L=selLayer(); if(!L) return; const a=b.dataset.a;
+  if(a==='up'||a==='dn'){ const f=a==='up'?1.06:1/1.06; bump(L,f); draw(); syncSizeCtl(L);
+    clearInterval(holdT); let n=0; holdT=setInterval(()=>{ if(++n>3){ bump(L,f); draw(); syncSizeCtl(L);} },110); }
+});
+const stopHold=()=>{ if(holdT){ clearInterval(holdT); holdT=null; persistCur(); } };
+['pointerup','pointercancel','pointerleave'].forEach(ev=>$('ftool').addEventListener(ev,stopHold));
+$('ftool').addEventListener('click',e=>{ const b=e.target.closest('button'); if(!b) return; const L=selLayer(); if(!L) return; const a=b.dataset.a;
+  if(a==='font') fontSheet();
+  if(a==='edit'){ showPanel('text'); syncPanels(); const ta=$('tText'); ta.focus(); ta.scrollIntoView({block:'center',behavior:'smooth'}); }
+  if(a==='frame'){ const ks=FRAMES.map(f=>f[0]); L.frame=ks[(ks.indexOf(L.frame)+1)%ks.length]; commit(); }
+  if(a==='del'){ cur.layers=cur.layers.filter(l=>l!==L); sel=null; commit(); }
+});
+function syncSizeCtl(L){ if(L.type==='text'){ $('tSize').value=L.size; $('szVal').textContent=sizeLabel(L); } else { $('iSize').value=L.w; $('iszVal').textContent=Math.round(L.w/100*cur.wmm)+' mm'; } }
+window.addEventListener('resize',()=>{ sizeStage(); draw(); });
+
+let drag=null, pinch=null; const ptrs=new Map();
+cv.addEventListener('pointerdown',e=>{
+  const r=cv.getBoundingClientRect(); const px=e.clientX-r.left, py=e.clientY-r.top;
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY}); cv.setPointerCapture(e.pointerId);
+  if(ptrs.size===2){ const L=selLayer(); if(L){ const [a,b]=[...ptrs.values()]; pinch={L,d0:Math.hypot(a.x-b.x,a.y-b.y),base:L.type==='text'?L.size:L.w}; drag=null; draw(); } return; }
+  let hit=null; for(let i=boxes.length-1;i>=0;i--){ const b=boxes[i]; if(px>=b.x-10&&px<=b.x+b.w+10&&py>=b.y-10&&py<=b.y+b.h+10){hit=b;break;} }
+  sel = hit? hit.id : null;
+  if(hit){ const L=cur.layers.find(l=>l.id===hit.id); drag={L,ox:px/cssW-L.x,oy:py/cssH-L.y,moved:false}; }
+  syncPanels(); draw();
+});
+cv.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId)) return; ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinch && ptrs.size>=2){ const [a,b]=[...ptrs.values()]; const k=Math.hypot(a.x-b.x,a.y-b.y)/pinch.d0; const v=pinch.base*k;
+    if(pinch.L.type==='text') pinch.L.size=Math.max(1.5,Math.min(40,v)); else pinch.L.w=Math.max(5,Math.min(120,v)); draw(); syncSizeCtl(pinch.L); return; }
+  if(!drag) return; const r=cv.getBoundingClientRect();
+  let nx=(e.clientX-r.left)/cssW-drag.ox, ny=(e.clientY-r.top)/cssH-drag.oy;
+  guide = Math.abs(nx-.5)<.02; if(guide) nx=.5;
+  drag.moved=true; drag.L.x=Math.max(0,Math.min(1,nx)); drag.L.y=Math.max(0,Math.min(1,ny)); draw();
+});
+const endDrag=e=>{ ptrs.delete(e.pointerId); if(ptrs.size<2&&pinch){ pinch=null; persistCur(); }
+  if(drag && ptrs.size===0){ const L=drag.L, moved=drag.moved; drag=null; guide=false; persistCur(); if(!moved) showPanel(L.type==='image'?'photo':'text'); syncPanels(); }
+  draw(); };
+cv.addEventListener('pointerup',endDrag); cv.addEventListener('pointercancel',endDrag);
+
+/* ---------- panels ---------- */
+function showPanel(p){
+  document.querySelectorAll('#seg button').forEach(b=>b.setAttribute('aria-selected',b.dataset.p===p));
+  ['quick','text','photo','bg'].forEach(k=>$('p-'+k).hidden = k!==p);
+}
+document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>{ showPanel(b.dataset.p);
+  const pick=(type)=>{ const t=cur.layers.find(l=>l.id===sel&&l.type===type)||cur.layers.filter(l=>l.type===type)[0]; sel=t?t.id:null; };
+  if(b.dataset.p==='text') pick('text'); if(b.dataset.p==='photo') pick('image'); if(b.dataset.p==='bg') requestAnimationFrame(renderBgSw);
+  syncPanels(); draw(); });
+function selLayer(){ return cur && cur.layers.find(l=>l.id===sel); }
+
+['fHead','fName','fDet','fBy'].forEach((id,i)=>{ const key=['head','name','det','by'][i];
+  $(id).addEventListener('input',e=>{ cur.fields[key]=e.target.value; persistCur(); }); });
+document.querySelectorAll('#tplPick button').forEach(b=>b.onclick=()=>{ cur.tpl=b.dataset.t; syncPanels(); persistCur(); });
+$('applyTpl').onclick=()=>{ applyTemplate(); toast('Design ready — text-ൽ തൊട്ട് മാറ്റം വരുത്താം'); };
+
+function setFont(L,f){ L.font=f; if(FONT_WEIGHT_400.includes(f)) L.weight=400; else if((L.weight||400)<500 && L._wasBold) L.weight=700; ensureFonts(); commit(); }
+function fontSheet(){
+  const L=selLayer(); if(!L||L.type!=='text') return;
+  const sample = (L.text||'').split('\n')[0].slice(0,26) || 'Congratulations';
+  const cats=['All','Script','Bold','Clean','Classic','മലയാളം']; let cat='All';
+  const wrap=document.createElement('div'); wrap.className='sheet-bg'; wrap.style.zIndex=45;
+  wrap.innerHTML=`<div class="sheet" role="dialog" aria-label="Fonts"><div class="grab"></div><p class="eyebrow">Typography</p><h2>Font തിരഞ്ഞെടുക്കൂ</h2>
+    <div class="chips" id="fcats" style="margin-bottom:10px"></div><div class="flist" id="flist"></div>
+    <div class="row" style="margin-top:12px"><button class="btn grow" data-x>Done</button></div></div>`;
+  document.body.appendChild(wrap);
+  const draw2=()=>{
+    wrap.querySelector('#fcats').innerHTML=cats.map(c=>`<button class="chip h" data-c="${c}" aria-pressed="${c===cat}">${c}</button>`).join('');
+    wrap.querySelector('#flist').innerHTML=FONTS.filter(([f,c])=>cat==='All'||c===cat).map(([f,c])=>`<button data-f="${f}" aria-pressed="${f===L.font}"><span style="font-family:'${f}',${MAL_FALLBACK};font-weight:${FONT_WEIGHT_400.includes(f)?400:700}">${esc(c==='മലയാളം'&&!/[\u0D00-\u0D7F]/.test(sample)?'അഭിനന്ദനങ്ങൾ':sample)}</span><small>${f} · ${c}</small></button>`).join('');
+  };
+  draw2();
+  wrap.onclick=e=>{ if(e.target===wrap||e.target.closest('[data-x]')){ wrap.remove(); return; }
+    const c=e.target.closest('#fcats button'); if(c){ cat=c.dataset.c; draw2(); return; }
+    const b=e.target.closest('#flist button'); if(b){ setFont(L,b.dataset.f); draw2(); } };
+}
+$('fontBtn').onclick=fontSheet;
+$('colorSw').innerHTML = COLORS.map(c=>`<button data-c="${c}" style="background:${c}" aria-label="${c}"></button>`).join('');
+$('colorSw').onclick=e=>{ const b=e.target.closest('button'); const L=selLayer(); if(b&&L){ L.color=b.dataset.c; commit(); } };
+$('tText').addEventListener('input',e=>{ let L=selLayer(); if(!L||L.type!=='text') L=addTextLayer(e.target.value); else L.text=e.target.value; persistCur(); draw(); renderLayerChips(); });
+function addTextLayer(text){
+  const pal=(BGS[cur.bg]||BGS.silver).pal;
+  const L={id:uid(),type:'text',text:text||'',font:'Montserrat',weight:700,size:6,color:pal.name,x:.5,y:.5,maxW:.84,lh:1.18};
+  cur.layers.push(L); sel=L.id; ensureFonts(); return L;
+}
+$('addText').onclick=()=>{ addTextLayer('New text'); syncPanels(); draw(); persistCur(); $('tText').focus(); $('tText').select(); };
+$('delText').onclick=()=>{ const L=selLayer(); if(!L) return; cur.layers=cur.layers.filter(l=>l!==L); sel=null; commit(); };
+$('tSize').oninput=e=>{ const L=selLayer(); if(L){ L.size=+e.target.value; $('szVal').textContent=sizeLabel(L); draw(); } };
+$('tSize').onchange=()=>persistCur();
+$('tBold').onclick=()=>{ const L=selLayer(); if(!L) return; L.weight=(L.weight||400)>=700?400:700; commit(); ensureFonts(); };
+$('tShadow').onclick=()=>{ const L=selLayer(); if(!L) return; L.shadow=!L.shadow; commit(); };
+$('tCenter').onclick=()=>{ const L=selLayer(); if(L){ L.x=.5; commit(); } };
+function sizeLabel(L){ return `${(L.size/100*cur.wmm*2.835).toFixed(0)} pt`; }
+
+async function fileToDataURL(file,max=1400){
+  const url=URL.createObjectURL(file); const im=new Image(); im.src=url; await im.decode().catch(()=>{});
+  const s=Math.min(1,max/Math.max(im.naturalWidth||1,im.naturalHeight||1));
+  const c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*s); c.height=Math.round(im.naturalHeight*s);
+  c.getContext('2d').drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(url);
+  return c.toDataURL(/png|svg|webp/.test(file.type)?'image/png':'image/jpeg',0.86);
+}
+$('addPhoto').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const src=await fileToDataURL(f);
+  const L={id:uid(),type:'image',role:'photo',src,frame:'round',ring:'#e8c26a',x:.5,y:.33,w:40}; cur.layers.unshift(L); e.target.value='';
+  if(cur.layers.some(l=>l.type==='text')) applyTemplate(); sel=L.id; commit(); toast('Photo ചേർത്തു'); };
+$('addLogo').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; const src=await fileToDataURL(f,900);
+  const L={id:uid(),type:'image',role:'logo',src,frame:'none',ring:'none',x:.5,y:.9,w:18}; cur.layers.unshift(L); sel=L.id; e.target.value=''; commit(); };
+$('frameChips').innerHTML = FRAMES.map(([k,n])=>`<button class="chip" data-k="${k}">${n}</button>`).join('');
+$('frameChips').onclick=e=>{ const b=e.target.closest('button'); const L=selLayer(); if(b&&L&&L.type==='image'){ L.frame=b.dataset.k; commit(); } };
+$('ringSw').innerHTML = [['none','transparent'],['#e8c26a'],['#ffffff'],['#c8102e'],['#1b2b6b'],['#111111']].map(([c,bgc])=>`<button data-c="${c}" style="background:${bgc||c}" aria-label="${c==='none'?'No border':c}">${c==='none'?'<span style="color:var(--muted);font-size:14px">×</span>':''}</button>`).join('');
+$('ringSw').onclick=e=>{ const b=e.target.closest('button'); const L=selLayer(); if(b&&L&&L.type==='image'){ L.ring=b.dataset.c; commit(); } };
+$('iSize').oninput=e=>{ const L=selLayer(); if(L&&L.type==='image'){ L.w=+e.target.value; $('iszVal').textContent=Math.round(L.w/100*cur.wmm)+' mm'; draw(); } };
+$('iSize').onchange=()=>persistCur();
+$('iCenter').onclick=()=>{ const L=selLayer(); if(L){ L.x=.5; commit(); } };
+$('delImg').onclick=()=>{ const L=selLayer(); if(!L) return; cur.layers=cur.layers.filter(l=>l!==L); sel=null; commit(); };
+
+function recolor(d,fromK,toK){ const o=(BGS[fromK]||BGS.silver).pal, n=(BGS[toK]||BGS.silver).pal;
+  for(const L of d.layers){ if(L.type!=='text') continue; if(L.color===o.head) L.color=n.head; else if(L.color===o.name) L.color=n.name; else if(L.color===o.body) L.color=n.body; } }
+function renderBgSw(){
+  if(!cur) return; const keep=sel; sel=null;
+  const keys=Object.keys(BGS).filter(k=>k!=='photo'||cur.bgImg);
+  const ar=cur.wmm/cur.hmm; const pw = ar>=1 ? 132 : Math.max(70,Math.round(150*ar)); const ph=Math.round(pw/ar);
+  $('bgSw').innerHTML=''; 
+  for(const k of keys){ const b=document.createElement('button'); b.dataset.b=k; b.setAttribute('aria-pressed',k===cur.bg);
+    const c=document.createElement('canvas'); const dpr=Math.min(2,window.devicePixelRatio||1); c.width=pw*dpr; c.height=ph*dpr; c.style.width=pw+'px';
+    const d=JSON.parse(JSON.stringify(cur)); recolor(d,cur.bg,k); d.bg=k; const x=c.getContext('2d'); x.scale(dpr,dpr); render(x,d,pw,ph,{screen:true});
+    b.appendChild(c); b.append(BGS[k].name); $('bgSw').appendChild(b); }
+  sel=keep;
+}
+$('bgSw').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; const k=b.dataset.b; recolor(cur,cur.bg,k); cur.bg=k;
+  if(!cur.layers.some(l=>l.type==='text')) applyTemplate();
+  $('bgSw').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.b===k)); commit(); };
+$('bgFile').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; cur.bgImg=await fileToDataURL(f,2400); cur.bg='photo'; cur.bgDim=cur.bgDim??0; e.target.value=''; commit(); renderBgSw(); toast('Background ചേർത്തു'); };
+$('bgDim').oninput=e=>{ cur.bgDim=+e.target.value; $('dimVal').textContent=Math.round(cur.bgDim*100)+'%'; draw(); };
+$('bgDim').onchange=()=>persistCur();
+function googleQuery(){ const t=[cur.fields.head,cur.fields.det].join(' ').toLowerCase(); let q='trophy award certificate background';
+  if(/sport|football|cricket|race|kayika/.test(t)) q='sports award background gold hd';
+  else if(/school|class|annual|talent|fest|kalolsavam|cultural/.test(t)) q='school award background colorful hd';
+  else if(/visa|honour|honor|felicitation|retire|best/.test(t)) q='luxury gold award background hd';
+  return 'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(q+' '+(cur.wmm>cur.hmm?'landscape':'portrait'));
+}
+let sampler=null;
+(async()=>{ try{ sampler = window.claude ? await window.claude.use('sample') : null; }catch(e){ sampler=null; } if(sampler){ $('bgAuto').hidden=false; try{ sampleCaps=await sampler.limits(); }catch(e){} if(sampleCaps&&sampleCaps.images) $('ocrBtn').hidden=false; } })();
+$('bgAuto').onclick=async()=>{
+  const btn=$('bgAuto'); btn.disabled=true; const old=btn.lastChild.textContent; btn.lastChild.textContent='Choosing…';
+  try{
+    const keys=Object.keys(BG_HINT);
+    const res = await sampler.json(`You pick a background for a printed trophy/award plate. Options (key: suits): ${keys.map(k=>k+': '+BG_HINT[k]).join('; ')}. Plate: ${cur.wmm}x${cur.hmm} mm, shape ${cur.shape}. Text on plate: heading "${cur.fields.head}", name "${cur.fields.name}", award "${cur.fields.det}", presented by "${cur.fields.by}". Reply only JSON: {"bg":"<one key>","why":"<max 12 words, simple English>"}`,{modelTier:'quick'});
+    if(res && BGS[res.bg] && res.bg!=='photo'){ $('bgSw').querySelector(`[data-b="${res.bg}"]`).click(); const n=$('bgAutoNote'); n.hidden=false; n.textContent=`${BGS[res.bg].name}: ${res.why||''}`; }
+  }catch(e){ if(e&&e.code==='not_granted') btn.hidden=true; else toast('Auto select ഇപ്പോൾ നടന്നില്ല, നേരിട്ട് തിരഞ്ഞെടുക്കൂ'); }
+  btn.disabled=false; btn.lastChild.textContent=old;
+};
+$('borderChips').innerHTML = [['none','None'],['single','Single'],['double','Double']].map(([k,n])=>`<button class="chip h" data-k="${k}">${n}</button>`).join('');
+$('borderChips').onclick=e=>{ const b=e.target.closest('button'); if(b){ cur.border=b.dataset.k; commit(); } };
+$('borderColorSw').innerHTML = ['#c8102e','#e8c26a','#b8860b','#1b2b6b','#ffffff','#111111'].map(c=>`<button data-c="${c}" style="background:${c}" aria-label="${c}"></button>`).join('');
+$('borderColorSw').onclick=e=>{ const b=e.target.closest('button'); if(b){ cur.borderColor=b.dataset.c; commit(); } };
+
+function commit(){ persistCur(); syncPanels(); draw(); }
+function renderLayerChips(){
+  const t=cur.layers.filter(l=>l.type==='text'), im=cur.layers.filter(l=>l.type==='image');
+  $('textLayers').innerHTML = t.length? t.map(l=>`<button data-id="${l.id}" aria-pressed="${l.id===sel}">${esc(l.text.split('\n')[0]||'(empty)')}</button>`).join('') : '<span class="empty">Text ഇല്ല. "Details" tab-ൽ നിന്ന് design ഉണ്ടാക്കൂ, അല്ലെങ്കിൽ New text ചേർക്കൂ.</span>';
+  $('imgLayers').innerHTML = im.length? im.map((l,i)=>`<button data-id="${l.id}" aria-pressed="${l.id===sel}">${l.role==='logo'?'Logo':'Photo'} ${i+1}</button>`).join('') : '<span class="empty">Trophy-യിൽ വരേണ്ട ആളുടെ photo ചേർക്കാം.</span>';
+}
+['textLayers','imgLayers'].forEach(id=>$(id).onclick=e=>{ const b=e.target.closest('button[data-id]'); if(b){ sel=b.dataset.id; syncPanels(); draw(); } });
+
+function syncPanels(){
+  if(!cur) return;
+  $('fHead').value=cur.fields.head; $('fName').value=cur.fields.name; $('fDet').value=cur.fields.det; $('fBy').value=cur.fields.by;
+  document.querySelectorAll('#tplPick button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.t===cur.tpl));
+  renderLayerChips();
+  const L=selLayer(), isT=L&&L.type==='text', isI=L&&L.type==='image';
+  $('textCtl').hidden=!isT; $('delText').hidden=!isT;
+  if(document.activeElement!==$('tText')) $('tText').value = isT? L.text : '';
+  if(isT){ $('tSize').value=L.size; $('szVal').textContent=sizeLabel(L);
+    $('fontBtnName').textContent=L.font; $('fontBtnName').style.fontFamily=`'${L.font}',${MAL_FALLBACK}`;
+    document.querySelectorAll('#colorSw button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===L.color));
+    $('tBold').setAttribute('aria-pressed',(L.weight||400)>=700); }
+  $('imgCtl').hidden=!isI;
+  if(isI){ $('iSize').value=L.w; $('iszVal').textContent=Math.round(L.w/100*cur.wmm)+' mm';
+    document.querySelectorAll('#frameChips button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===L.frame));
+    document.querySelectorAll('#ringSw button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===L.ring)); }
+  document.querySelectorAll('#bgSw button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.b===cur.bg));
+  $('dimWrap').hidden = cur.bg!=='photo'; $('bgDim').value=cur.bgDim||0; $('dimVal').textContent=Math.round((cur.bgDim||0)*100)+'%';
+  $('bgGoogle').href=googleQuery();
+  document.querySelectorAll('#borderChips button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===cur.border));
+  document.querySelectorAll('#borderColorSw button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===cur.borderColor));
+}
+
+/* ---------- voice input ---------- */
+const LANGS=[['ml-IN','മലയാളം'],['en-IN','English'],['hi-IN','हिंदी'],['ta-IN','தமிழ்'],['ar-AE','العربية']];
+let speechLang='ml-IN', voiceMode='auto';
+try{ speechLang=localStorage.getItem('disni-lang')||'ml-IN'; }catch(e){}
+function renderLangs(){ $('langs').innerHTML=LANGS.map(([k,n])=>`<button type="button" data-l="${k}" aria-pressed="${k===speechLang}">${n}</button>`).join(''); }
+renderLangs();
+$('langs').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; speechLang=b.dataset.l; try{localStorage.setItem('disni-lang',speechLang)}catch(e){} renderLangs(); };
+let activeRec=null;
+function keyboardVoice(target){ voiceMode='keyboard'; target.focus(); toast('Keyboard-ലെ mic അമർത്തി പറയൂ — ഏത് ഭാഷയും'); }
+function listen(btn){
+  const target=$(btn.dataset.for); if(!target) return;
+  if(activeRec){ try{activeRec.stop();}catch(e){} return; }
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR||voiceMode==='keyboard'){ keyboardVoice(target); return; }
+  let r; try{ r=new SR(); }catch(e){ keyboardVoice(target); return; }
+  r.lang=speechLang; r.interimResults=true; r.continuous=false; r.maxAlternatives=1;
+  const base=target.value.trim(); let gotAny=false;
+  r.onresult=e=>{ gotAny=true; let t=''; for(const res of e.results) t+=res[0].transcript; target.value=(base?base+' ':'')+t.trim(); target.dispatchEvent(new Event('input',{bubbles:true})); };
+  r.onerror=ev=>{ if(['not-allowed','service-not-allowed','audio-capture','network'].includes(ev.error)) keyboardVoice(target); };
+  r.onend=()=>{ btn.classList.remove('on'); activeRec=null; if(gotAny) toast('Voice ചേർത്തു'); };
+  try{ r.start(); activeRec=r; btn.classList.add('on'); toast('കേൾക്കുന്നു… പറയൂ'); }catch(e){ keyboardVoice(target); }
+}
+document.addEventListener('click',e=>{ const b=e.target.closest('.micbtn'); if(b){ e.preventDefault(); listen(b); } });
+
+/* ---------- photo to text (Claude reads the photo) ---------- */
+let sampleCaps=null;
+async function fileToBlob(file,max=1600){
+  const url=URL.createObjectURL(file); const im=new Image(); im.src=url; await im.decode().catch(()=>{});
+  const s=Math.min(1,max/Math.max(im.naturalWidth||1,im.naturalHeight||1));
+  const c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*s); c.height=Math.round(im.naturalHeight*s);
+  c.getContext('2d').drawImage(im,0,0,c.width,c.height); URL.revokeObjectURL(url);
+  return new Promise(res=>c.toBlob(res,'image/jpeg',0.85));
+}
+$('ocrFile').onchange=async e=>{
+  const f=e.target.files[0]; e.target.value=''; if(!f||!sampler) return;
+  const box=$('ocrBtn'), title=box.querySelector('b'), old=title.textContent; title.textContent='വായിക്കുന്നു…';
+  try{
+    const blob=await fileToBlob(f);
+    const res=await sampler.json(`This photo shows text meant for a trophy / award plate: an order slip, a handwritten note, a WhatsApp screenshot or an existing trophy. Text may be Malayalam, English or mixed. Read it and return ONLY JSON {"head":"","name":"","det":"","by":""}. head = heading or position (e.g. Congratulations, FIRST PRIZE, അഭിനന്ദനങ്ങൾ). name = the person or team being honoured. det = award / event / reason lines, joined with \n. by = the organisation or person presenting it. Keep the original language and spelling exactly. Use "" for anything not present.`,{images:[blob],modelTier:'default'});
+    let n=0; for(const k of ['head','name','det','by']){ if(res&&typeof res[k]==='string'&&res[k].trim()){ cur.fields[k]=res[k].trim(); n++; } }
+    if(n){ syncPanels(); applyTemplate(); toast('Photo-യിൽ നിന്ന് details നിറച്ചു — ഒന്ന് check ചെയ്യൂ'); } else toast('Photo-യിൽ text കണ്ടില്ല');
+  }catch(err){ if(err&&err.code==='not_granted') box.hidden=true; else toast('ഇപ്പോൾ വായിക്കാൻ പറ്റിയില്ല, വീണ്ടും ശ്രമിക്കൂ'); }
+  title.textContent=old;
+};
+
+/* ---------- model bar ---------- */
+function syncModelBar(){
+  $('modelSel').innerHTML = models.map(m=>`<option value="${m.id}" ${m.id===cur.modelId?'selected':''}>${esc(m.name)}</option>`).join('');
+  const m=models.find(m=>m.id===cur.modelId);
+  $('mbSize').textContent = `${fmt(cur.wmm)} × ${fmt(cur.hmm)} MM · ${(SHAPES.find(s=>s[0]===cur.shape)||[])[1]||''}`;
+  $('dims').textContent = `W ${fmt(cur.wmm)} MM  ·  H ${fmt(cur.hmm)} MM`;
+  if(m&&m.photo){ $('mbImg').src=m.photo; $('mbImg').hidden=false; $('mbNo').hidden=true; } else { $('mbImg').hidden=true; $('mbNo').hidden=false; }
+}
+$('modelSel').onchange=e=>{ const m=models.find(m=>m.id===e.target.value); if(m) setModel(m); };
+function setModel(m){
+  cur.modelId=m.id; cur.wmm=m.wmm; cur.hmm=m.hmm; cur.shape=m.shape;
+  if(cur.layers.some(l=>l.type==='text')) applyTemplate();
+  syncModelBar(); sizeStage(); draw(); persistCur();
+}
+const fmt = n => (Math.round(n*10)/10).toString();
+
+/* ---------- models view ---------- */
+function shapeIcon(shape,size=30,color='#e8c26a'){
+  const c=document.createElement('canvas'); c.width=size*2; c.height=size*2; const x=c.getContext('2d');
+  shapePath(x,shape,4,4,size*2-8,size*2-8); x.strokeStyle=color; x.lineWidth=3; x.stroke(); return c;
+}
+function renderModels(){
+  const g=$('modelGrid'); g.innerHTML='';
+  const add=document.createElement('button'); add.className='addcard';
+  add.innerHTML='<span class="plus"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg></span>New Model<small style="color:var(--muted);font-weight:500">Photo എടുത്ത് ചേർക്കൂ</small>';
+  add.onclick=()=>modelSheet(); g.appendChild(add);
+  for(const m of models){
+    const b=document.createElement('button'); b.className='mcard';
+    b.innerHTML=`<div class="ph">${m.photo?`<img src="${m.photo}" alt="">`:''}${m.example?'<span class="tag">Sample</span>':''}${m.price?`<span class="pricebadge">₹${(+m.price).toLocaleString('en-IN')}</span>`:''}<span class="sizebadge">${fmt(m.wmm)} × ${fmt(m.hmm)}</span></div><div class="meta"><b>${esc(m.name)}</b><small>${(SHAPES.find(s=>s[0]===m.shape)||[])[1]||''} · mm</small></div>`;
+    if(!m.photo) b.querySelector('.ph').prepend(shapeIcon(m.shape,60));
+    b.onclick=()=>modelSheet(m); g.appendChild(b);
+  }
+}
+function modelSheet(m){
+  const isNew=!m; const st = m? {...m} : {id:uid(),name:'',wmm:'',hmm:'',shape:'rect',photo:null};
+  const root=$('sheetRoot');
+  root.innerHTML=`<div class="sheet-bg"><div class="sheet" role="dialog" aria-label="Model">
+    <div class="grab"></div>
+    <p class="eyebrow">${isNew?'New':'Edit'}</p><h2>${isNew?'പുതിയ Model':esc(st.name)}</h2>
+    <div class="fields">
+      <div class="photo-pick"><div class="pv" id="mPv">${st.photo?`<img src="${st.photo}" alt="">`:'No photo'}</div>
+        <div class="grow" style="display:flex;flex-direction:column;gap:8px">
+          <label class="btn sm">Camera<input type="file" id="mCam" accept="image/*" capture="environment" hidden></label>
+          <label class="btn sm">Gallery<input type="file" id="mGal" accept="image/*" hidden></label>
+        </div></div>
+      <button class="measure-cta" id="mMeasure" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg><span><b>Photo-യിൽ നിന്ന് size അളക്കൂ</b><small>Card / A4 / coin trophy-യുടെ അടുത്ത് വച്ച് എടുത്ത photo വേണം</small></span></button>
+      <label class="f">Model name / code <input class="inp" id="mName" value="${esc(st.name)}" placeholder="ഉദാ: Glass Octagon G-12"></label>
+      <div class="two"><label class="f">Width (mm) <input class="inp" id="mW" type="number" step="0.5" inputmode="decimal" value="${st.wmm}" placeholder="75"></label>
+      <label class="f">Height (mm) <input class="inp" id="mH" type="number" step="0.5" inputmode="decimal" value="${st.hmm}" placeholder="150"></label></div>
+      <label class="f">Price ₹ (optional) <input class="inp" id="mP" type="number" inputmode="numeric" value="${st.price||''}" placeholder="ഉദാ: 450"></label>
+      <div class="lbl">SHAPE</div>
+      <div class="chips" id="mShapes"></div>
+      <div id="mErr" class="sub" style="color:var(--danger);margin:0" hidden></div>
+      <div class="row">
+        <button class="btn primary grow" id="mSave">Save</button>
+        ${isNew?'':'<button class="btn red grow" id="mDesign">Design ചെയ്യൂ</button>'}
+      </div>
+      <div class="row"><button class="btn ghost sm" id="mClose">Close</button><span class="grow"></span>${isNew?'':'<button class="btn sm danger" id="mDel">Delete model</button>'}</div>
+      <div id="mConfirm"></div>
+    </div></div></div>`;
+  const sh=$('mShapes');
+  SHAPES.forEach(([k,n])=>{ const b=document.createElement('button'); b.className='chip'; b.dataset.k=k; b.setAttribute('aria-pressed',k===st.shape); b.appendChild(shapeIcon(k,14)); b.append(n); b.onclick=()=>{ st.shape=k; sh.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.k===k)); }; sh.appendChild(b); });
+  const pick=async e=>{ const f=e.target.files[0]; if(!f) return; st.photo=await fileToDataURL(f,1600); $('mPv').innerHTML=`<img src="${st.photo}" alt="">`; };
+  $('mCam').onchange=pick; $('mGal').onchange=pick;
+  const close=()=>root.innerHTML='';
+  const grab=()=>{ st.price=+$('mP').value||''; st.name=$('mName').value.trim(); st.wmm=+$('mW').value||st.wmm; st.hmm=+$('mH').value||st.hmm; };
+  root.querySelector('.sheet-bg').onclick=e=>{ if(e.target.classList.contains('sheet-bg')) close(); };
+  $('mClose').onclick=close;
+  $('mMeasure').onclick=()=>{ grab(); if(!st.photo){ $('mErr').hidden=false; $('mErr').textContent='ആദ്യം Camera / Gallery വഴി photo ചേർക്കൂ.'; return; }
+    measureSheet(st.photo, st.measure, (res)=>{ st.wmm=res.w; st.hmm=res.h; st.measure=res.state; modelSheet(Object.assign(st,{})); if(isNew) setTimeout(()=>{},0); }, ()=>modelSheet(st));
+    if(isNew){ /* keep draft */ } };
+  const save=()=>{ grab(); st.wmm=+$('mW').value; st.hmm=+$('mH').value;
+    if(!st.name||!(st.wmm>0)||!(st.hmm>0)){ $('mErr').hidden=false; $('mErr').textContent='Name, width, height എല്ലാം നൽകൂ.'; return null; }
+    st.example=false; const i=models.findIndex(x=>x.id===st.id); if(i>=0) models[i]=st; else models.unshift(st);
+    store.set('models',models); renderModels(); return st; };
+  $('mSave').onclick=()=>{ if(save()){ close(); toast('Model saved'); } };
+  if(!isNew){
+    $('mDesign').onclick=()=>{ const s=save(); if(!s) return; close(); openDesignFor(s); };
+    $('mDel').onclick=()=>{ $('mConfirm').innerHTML=`<div class="confirm"><span class="grow">"${esc(st.name)}" delete ചെയ്യണോ?</span><button class="btn sm danger" id="mDelY">Delete</button><button class="btn sm" id="mDelN">വേണ്ട</button></div>`;
+      $('mDelN').onclick=()=>$('mConfirm').innerHTML='';
+      $('mDelY').onclick=()=>{ models=models.filter(x=>x.id!==st.id); store.set('models',models); renderModels(); close(); }; };
+  }
+}
+function openDesignFor(m){
+  const keep = cur? {...cur.fields} : null;
+  cur=newDesign(m); if(keep) cur.fields=keep;
+  if(cur.fields.name||cur.fields.det) applyTemplate();
+  persistCur(); go('design');
+}
+
+/* ---------- measure from photo ---------- */
+const MCOL={ref:'#e8c26a',h:'#ff4d6a',w:'#4da3ff'};
+function measureSheet(photo, prev, onDone, onBack){
+  const root=$('sheetRoot');
+  const S = prev ? JSON.parse(JSON.stringify(prev)) : {ref:'card',refMm:85.6,custom:'',
+    seg:{ref:[[.2,.86],[.62,.86]], h:[[.5,.12],[.5,.72]], w:[[.25,.42],[.75,.42]]}};
+  let active='ref';
+  root.innerHTML=`<div class="sheet-bg"><div class="sheet" role="dialog" aria-label="Measure">
+    <div class="grab"></div>
+    <p class="eyebrow">Measure</p><h2>Photo-യിൽ നിന്ന് size</h2>
+    <p class="sub">മൂന്ന് വരകളുടെയും അറ്റത്തുള്ള dots drag ചെയ്ത് ശരിയായ സ്ഥാനത്ത് വയ്ക്കൂ.</p>
+    <div class="lbl" style="margin-bottom:6px">REFERENCE · photo-യിൽ ഉള്ള വസ്തു</div>
+    <div class="chips" id="refChips"></div>
+    <label class="f" id="customWrap" style="margin-top:8px" hidden>Reference നീളം (mm) <input class="inp" id="refCustom" type="number" step="0.5" inputmode="decimal" placeholder="ഉദാ: 100"></label>
+    <div class="mlegend" id="mleg">
+      <button data-k="ref" style="color:${MCOL.ref}"><span><i style="background:${MCOL.ref}"></i>Reference</span><b id="lvRef"></b></button>
+      <button data-k="h" style="color:${MCOL.h}"><span><i style="background:${MCOL.h}"></i>Height</span><b id="lvH">–</b></button>
+      <button data-k="w" style="color:${MCOL.w}"><span><i style="background:${MCOL.w}"></i>Width</span><b id="lvW">–</b></button>
+    </div>
+    <div class="mwrap"><canvas id="mcv"></canvas></div>
+    <ul class="tips" style="margin-top:10px">
+      <li>Card / A4 / coin trophy-യുടെ print area-യുടെ <b>അതേ നിരപ്പിൽ</b> ചേർത്ത് വയ്ക്കൂ.</li>
+      <li>നേരെ മുന്നിൽ നിന്ന്, ഒരു മീറ്റർ അകലെ നിന്ന് zoom ചെയ്ത് എടുത്താൽ ചെരിവ് error കുറയും.</li>
+      <li>Reference എത്ര നീളമുള്ളതാണോ അത്രയും കൃത്യത കൂടും (coin-നേക്കാൾ നല്ലത് card / A4).</li>
+    </ul>
+    <div class="row" style="margin-top:12px"><button class="btn ghost" id="msBack">Back</button><button class="btn primary grow" id="msUse">ഈ size use ചെയ്യൂ</button></div>
+  </div></div>`;
+  const rc=$('refChips');
+  REFS.forEach(([k,n,mm])=>{ const b=document.createElement('button'); b.className='chip h'; b.dataset.k=k; b.textContent=n+(mm?` · ${mm}`:''); b.setAttribute('aria-pressed',k===S.ref); rc.appendChild(b); });
+  rc.onclick=e=>{ const b=e.target.closest('button'); if(!b) return; S.ref=b.dataset.k; const r=REFS.find(x=>x[0]===S.ref); S.refMm=r[2]; rc.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.k===S.ref)); $('customWrap').hidden=S.ref!=='custom'; calc(); };
+  $('customWrap').hidden=S.ref!=='custom'; $('refCustom').value=S.custom||'';
+  $('refCustom').oninput=e=>{ S.custom=e.target.value; calc(); };
+  $('mleg').onclick=e=>{ const b=e.target.closest('button'); if(b){ active=b.dataset.k; paint(); } };
+
+  const mcv=$('mcv'), im=new Image(); let W=0,H=0,dpr=Math.min(3,window.devicePixelRatio||1), dragP=null, loupe=null;
+  im.onload=()=>{ const avail=mcv.parentElement.clientWidth; const maxH=window.innerHeight*0.55; const ar=im.naturalWidth/im.naturalHeight;
+    W=Math.min(avail,maxH*ar); H=W/ar; mcv.style.width=W+'px'; mcv.style.height=H+'px'; mcv.parentElement.style.width=W+'px'; mcv.parentElement.style.margin='0 auto';
+    mcv.width=Math.round(W*dpr); mcv.height=Math.round(H*dpr); paint(); calc(); };
+  im.src=photo;
+  const lenPx=k=>{ const [a,b]=S.seg[k]; return Math.hypot((a[0]-b[0])*im.naturalWidth,(a[1]-b[1])*im.naturalHeight); };
+  function refMm(){ return S.ref==='custom' ? (+S.custom||0) : S.refMm; }
+  let result=null;
+  function calc(){
+    const rm=refMm(), rp=lenPx('ref');
+    $('lvRef').textContent = rm? `${fmt(rm)} mm` : 'mm നൽകൂ';
+    if(!rm||rp<4){ $('lvH').textContent='–'; $('lvW').textContent='–'; result=null; return; }
+    const k=rm/rp; const h=Math.round(lenPx('h')*k*2)/2, w=Math.round(lenPx('w')*k*2)/2;
+    $('lvH').textContent=`${fmt(h)} mm`; $('lvW').textContent=`${fmt(w)} mm`; result={w,h};
+  }
+  function paint(){
+    const x=mcv.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,W,H); x.drawImage(im,0,0,W,H);
+    x.fillStyle='rgba(0,0,0,.15)'; x.fillRect(0,0,W,H);
+    for(const k of ['ref','w','h']){
+      const [a,b]=S.seg[k]; const ax=a[0]*W, ay=a[1]*H, bx=b[0]*W, by=b[1]*H; const on=k===active;
+      x.strokeStyle='rgba(0,0,0,.6)'; x.lineWidth=on?5:4; x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by); x.stroke();
+      x.strokeStyle=MCOL[k]; x.lineWidth=on?2.5:1.6; x.beginPath(); x.moveTo(ax,ay); x.lineTo(bx,by); x.stroke();
+      for(const [px,py] of [[ax,ay],[bx,by]]){
+        x.beginPath(); x.arc(px,py,on?11:8,0,Math.PI*2); x.fillStyle=on?'rgba(0,0,0,.35)':'rgba(0,0,0,.25)'; x.fill(); x.lineWidth=2; x.strokeStyle=MCOL[k]; x.stroke();
+        x.beginPath(); x.moveTo(px-4,py); x.lineTo(px+4,py); x.moveTo(px,py-4); x.lineTo(px,py+4); x.lineWidth=1.2; x.stroke();
+      }
+    }
+    if(loupe){ // magnifier for precise placement
+      const R=Math.min(58,W*0.2), z=3, cx = loupe.x < W/2 ? W-R-10 : R+10, cy=R+10;
+      x.save(); x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.clip();
+      const sx=loupe.x/W*im.naturalWidth, sy=loupe.y/H*im.naturalHeight, sw=(R*2/z)/W*im.naturalWidth, sh2=(R*2/z)/H*im.naturalHeight;
+      x.drawImage(im,sx-sw/2,sy-sh2/2,sw,sh2,cx-R,cy-R,R*2,R*2);
+      x.strokeStyle=MCOL[dragP.k]; x.lineWidth=1.2; x.beginPath(); x.moveTo(cx-R,cy); x.lineTo(cx+R,cy); x.moveTo(cx,cy-R); x.lineTo(cx,cy+R); x.stroke();
+      x.restore(); x.beginPath(); x.arc(cx,cy,R,0,Math.PI*2); x.lineWidth=2; x.strokeStyle='#fff'; x.stroke();
+    }
+  }
+  mcv.addEventListener('pointerdown',e=>{
+    const r=mcv.getBoundingClientRect(), px=e.clientX-r.left, py=e.clientY-r.top;
+    let best=null, bd=30;
+    const order=[active,...['ref','h','w'].filter(k=>k!==active)];
+    for(const k of order) S.seg[k].forEach((p,i)=>{ const d=Math.hypot(p[0]*W-px,p[1]*H-py); if(d<bd){bd=d;best={k,i};} });
+    if(!best) return;
+    dragP=best; active=best.k; mcv.setPointerCapture(e.pointerId); loupe={x:px,y:py}; paint();
+  });
+  mcv.addEventListener('pointermove',e=>{ if(!dragP) return; const r=mcv.getBoundingClientRect();
+    const px=Math.max(0,Math.min(W,e.clientX-r.left)), py=Math.max(0,Math.min(H,e.clientY-r.top));
+    S.seg[dragP.k][dragP.i]=[px/W,py/H]; loupe={x:px,y:py}; paint(); calc(); });
+  const up=()=>{ dragP=null; loupe=null; paint(); };
+  mcv.addEventListener('pointerup',up); mcv.addEventListener('pointercancel',up);
+  $('msBack').onclick=onBack;
+  $('msUse').onclick=()=>{ calc(); if(!result){ toast('Reference-ന്റെ നീളം നൽകൂ'); return; } onDone({w:result.w,h:result.h,state:S}); toast(`Size: ${fmt(result.w)} × ${fmt(result.h)} mm`); };
+}
+
+/* ---------- saved designs ---------- */
+function persistCur(){ if(cur) store.set('current',cur); }
+function thumb(d){ const keep=sel; sel=null; const c=document.createElement('canvas'); const s=160/Math.max(d.wmm,d.hmm); c.width=Math.round(d.wmm*s); c.height=Math.round(d.hmm*s); render(c.getContext('2d'),d,c.width,c.height,{screen:true}); sel=keep; return c.toDataURL('image/jpeg',.75); }
+function saveCurrent(silent){
+  cur.name = cur.name || cur.fields.name || 'Design';
+  const copy=JSON.parse(JSON.stringify(cur)); copy.updated=Date.now(); copy.thumb=thumb(cur);
+  const i=designs.findIndex(x=>x.id===copy.id); if(i>=0) designs[i]=copy; else designs.unshift(copy);
+  store.set('designs',designs); if(!silent) toast('Saved: '+copy.name); return copy;
+}
+$('saveDesign').onclick=()=>saveCurrent();
+function renderSaved(){
+  const L=$('dlist');
+  if(!designs.length){ L.innerHTML='<p class="empty">ഇതുവരെ ഒന്നും save ചെയ്തിട്ടില്ല. Design tab-ൽ "Save" അമർത്തിയാൽ ഇവിടെ വരും.</p>'; }
+  else L.innerHTML = designs.map(d=>{ const m=models.find(m=>m.id===d.modelId);
+    return `<div class="ditem" data-id="${d.id}"><img src="${d.thumb||''}" alt=""><div class="t"><b>${esc(d.name)}</b><small>${esc(m?m.name:'')} · ${fmt(d.wmm)}×${fmt(d.hmm)} mm · ${new Date(d.updated).toLocaleDateString('en-IN')}</small><div class="dc"></div></div>
+    <div style="display:flex;flex-direction:column;gap:6px"><button class="btn sm" data-a="open">Open</button><button class="btn sm danger" data-a="del">Delete</button></div></div>`; }).join('');
+  renderContacts();
+}
+$('dlist').onclick=e=>{ const b=e.target.closest('button[data-a]'); if(!b) return; const item=b.closest('.ditem'); const id=item.dataset.id; const d=designs.find(x=>x.id===id);
+  if(b.dataset.a==='open'){ cur=JSON.parse(JSON.stringify(d)); delete cur.thumb; sel=null; persistCur(); go('design'); }
+  if(b.dataset.a==='del'){ const dc=item.querySelector('.dc'); dc.innerHTML=`<div class="confirm" style="margin-top:6px"><span>ഉറപ്പാണോ?</span><button class="btn sm danger" data-y>Delete</button></div>`;
+    dc.querySelector('[data-y]').onclick=()=>{ designs=designs.filter(x=>x.id!==id); store.set('designs',designs); renderSaved(); }; }
+};
+
+/* ---------- contacts ---------- */
+function normNum(s){ let d=String(s||'').replace(/\D/g,''); if(d.length===11&&d[0]==='0') d=d.slice(1); if(d.length===10) d='91'+d; return d; }
+function prettyNum(d){ return d.length===12&&d.startsWith('91') ? `+91 ${d.slice(2,7)} ${d.slice(7)}` : '+'+d; }
+function waLink(num,msg){ return num ? `https://wa.me/${num}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`; }
+function renderContacts(){
+  const L=$('contactList');
+  L.innerHTML = contacts.length ? contacts.map(c=>`<div class="citem" data-id="${c.id}"><span class="avatar">${esc((c.name||'?')[0].toUpperCase())}</span><div class="t"><b>${esc(c.name)}</b><small class="num">${prettyNum(c.num)}</small></div><button class="btn sm danger" data-del>Delete</button></div>`).join('')
+    : '<p class="empty">Contacts ഇല്ല.</p>';
+}
+$('contactList').onclick=e=>{ const b=e.target.closest('[data-del]'); if(!b) return; const id=b.closest('.citem').dataset.id; contacts=contacts.filter(c=>c.id!==id); store.set('contacts',contacts); renderContacts(); };
+function addContact(name,num){ const n=normNum(num); if(n.length<10) return null; const ex=contacts.find(c=>c.num===n); if(ex){ if(name) ex.name=name; store.set('contacts',contacts); return ex; }
+  const c={id:uid(),name:name||prettyNum(n),num:n}; contacts.unshift(c); store.set('contacts',contacts); return c; }
+$('cAdd').onclick=()=>{ const c=addContact($('cName').value.trim(),$('cNum').value); if(!c){ toast('ശരിയായ 10 അക്ക number നൽകൂ'); return; } $('cName').value=''; $('cNum').value=''; renderContacts(); toast('Contact saved'); };
+
+/* ---------- export + WhatsApp ---------- */
+let dl=null;
+(async()=>{ try{ dl = window.claude ? await window.claude.use('downloads') : null; }catch(e){ dl=null; } })();
+function printCanvas(){
+  const dpi=300, W=Math.round(cur.wmm/25.4*dpi), H=Math.round(cur.hmm/25.4*dpi);
+  const c=document.createElement('canvas'); c.width=W; c.height=H; render(c.getContext('2d'),cur,W,H,{print:true}); return c;
+}
+function fileName(){ return `Disni_${(cur.name||cur.fields.name||'design').replace(/[^\wഀ-ൿ-]+/g,'_').slice(0,40)}_${fmt(cur.wmm)}x${fmt(cur.hmm)}mm.png`; }
+async function exportPng(){
+  await Promise.all(cur.layers.filter(l=>l.type==='image').map(l=>{ const im=getImg(l.src); return im.decode?im.decode().catch(()=>{}):null; }));
+  const c=printCanvas();
+  return new Promise(res=>c.toBlob(async b=>{ const ok=await saveFile(fileName(),b,c.toDataURL('image/png')); res(ok); },'image/png'));
+}
+async function saveFile(filename,data,previewURL){
+  if(dl){ try{ await dl.save({filename,data}); toast('File saved'); return true; }catch(e){ if(e&&e.code==='declined') return false; } }
+  if(previewURL){ showPreview(previewURL); return true; }
+  toast('ഇവിടെ file save ചെയ്യാൻ പറ്റുന്നില്ല'); return false;
+}
+function showPreview(url){
+  const root=$('sheetRoot'), prev=root.innerHTML;
+  const wrap=document.createElement('div'); wrap.className='sheet-bg'; wrap.style.zIndex=50;
+  wrap.innerHTML=`<div class="sheet"><div class="grab"></div><h2>Print file</h2><p class="sub">Image-ൽ അമർത്തിപ്പിടിച്ച് "Save image" / "Download" തിരഞ്ഞെടുക്കൂ.</p><img class="preview-img" src="${url}" alt="Print file"><div class="row" style="margin-top:12px"><button class="btn grow" data-x>Close</button></div></div>`;
+  wrap.querySelector('[data-x]').onclick=()=>wrap.remove(); document.body.appendChild(wrap);
+}
+$('exportPng').onclick=()=>exportPng();
+$('sendWa').onclick=()=>sendSheet();
+
+function sendSheet(){
+  const saved=saveCurrent(true);
+  const model=models.find(m=>m.id===cur.modelId);
+  const o=cur.order||(cur.order={item:model?model.name:'',price:(model&&model.price)||'',qty:1});
+  let edited=false;
+  const build=()=>{ const p=+o.price||0, q=Math.max(1,+o.qty||1); const rs=n=>'₹'+n.toLocaleString('en-IN');
+    return `*Disni Trophies*\n\n*Item:* ${o.item||'-'}\n*Size:* ${fmt(cur.wmm)} × ${fmt(cur.hmm)} mm\n`+
+      (cur.fields.name?`*Name on trophy:* ${cur.fields.name}\n`:'')+
+      (q>1?`*Qty:* ${q}\n`:'')+
+      (p?`*Price:* ${rs(p)}${q>1?` × ${q} = *${rs(p*q)}*`:''}\n`:'')+
+      `\nDesign ഇതോടൊപ്പം അയക്കുന്നു. ശരിയാണോ എന്ന് നോക്കി reply ചെയ്യൂ.`; };
+  const root=$('sheetRoot');
+  root.innerHTML=`<div class="sheet-bg"><div class="sheet" role="dialog" aria-label="WhatsApp">
+    <div class="grab"></div>
+    <p class="eyebrow">Share</p><h2>WhatsApp-ൽ അയക്കൂ</h2>
+    <div class="sendthumb"><img src="${saved.thumb}" alt=""><div><b>${esc(cur.name)}</b><div class="size">${fmt(cur.wmm)} × ${fmt(cur.hmm)} MM</div></div></div>
+    <div class="fields">
+      <div class="step"><span class="n">1</span><div class="body"><h3>Order details</h3>
+        <label class="f">Item / Trophy name <input class="inp" id="oItem" value="${esc(o.item)}" placeholder="ഉദാ: Glass Frame Award"></label>
+        <div class="two"><label class="f">Price ₹ (ഒന്നിന്) <input class="inp" id="oPrice" type="number" inputmode="numeric" value="${o.price}" placeholder="450"></label>
+        <label class="f">Qty <input class="inp" id="oQty" type="number" inputmode="numeric" min="1" value="${o.qty||1}"></label></div>
+        <p>Size (${fmt(cur.wmm)} × ${fmt(cur.hmm)} mm), trophy-യിലെ പേര് എന്നിവ message-ൽ തനിയെ വരും.</p></div></div>
+      <div class="step"><span class="n">2</span><div class="body"><h3>Design image save ചെയ്യൂ</h3><p>300 dpi PNG phone-ൽ save ആകും (iPhone-ൽ share sheet-ൽ നിന്ന് നേരിട്ട് WhatsApp തിരഞ്ഞെടുക്കാം).</p><button class="btn red" id="sSave">Print PNG save ചെയ്യൂ</button></div></div>
+      <div class="step"><span class="n">3</span><div class="body"><h3>ആർക്ക് അയക്കണം?</h3>
+        <div class="clist" id="sContacts"></div>
+        <div class="two"><label class="f">പുതിയ number <input class="inp" id="sNum" type="tel" inputmode="tel" placeholder="98470 12345"></label><label class="f">Name (optional) <input class="inp" id="sName" placeholder="Customer"></label></div>
+        <label class="row" style="font-size:13px;color:var(--muted);gap:6px"><input type="checkbox" id="sKeep" checked style="accent-color:var(--gold)"> Contacts-ൽ save ചെയ്യുക</label>
+        <a class="btn wa" id="sGoNum" href="#" target="_blank" rel="noopener">ഈ number-ലേക്ക് WhatsApp തുറക്കൂ</a>
+        <a class="btn" id="sPick" href="#" target="_blank" rel="noopener">WhatsApp contacts-ൽ നിന്ന് തിരഞ്ഞെടുക്കൂ</a>
+      </div></div>
+      <div class="step"><span class="n">4</span><div class="body"><h3>Image attach ചെയ്യൂ</h3><p>WhatsApp chat തുറക്കുമ്പോൾ message തയ്യാറായിരിക്കും. 📎 → Gallery-ൽ നിന്ന് save ചെയ്ത design ചേർത്ത് send ചെയ്യൂ.</p></div></div>
+      <label class="f">Message preview <textarea class="inp" id="sMsg" rows="8"></textarea></label>
+      <button class="btn ghost" id="sClose">Close</button>
+    </div></div></div>`;
+  $('sMsg').value=build();
+  const close=()=>{ persistCur(); root.innerHTML=''; };
+  root.querySelector('.sheet-bg').onclick=e=>{ if(e.target.classList.contains('sheet-bg')) close(); };
+  $('sClose').onclick=close;
+  $('sSave').onclick=()=>exportPng();
+  const refresh=()=>{
+    const msg=$('sMsg').value;
+    const n=normNum($('sNum').value);
+    const go=$('sGoNum'); go.href=waLink(n.length>=11?n:'',msg); go.style.opacity=n.length>=11?1:.5;
+    $('sPick').href=waLink('',msg);
+    $('sContacts').innerHTML = contacts.length ? contacts.map(c=>`<div class="citem"><span class="avatar">${esc((c.name||'?')[0].toUpperCase())}</span><div class="t"><b>${esc(c.name)}</b><small class="num">${prettyNum(c.num)}</small></div><a class="btn sm wa" href="${waLink(c.num,msg)}" target="_blank" rel="noopener">Send</a></div>`).join('')
+      : '<p class="empty" style="padding:0">Saved contacts ഇല്ല. താഴെ number നൽകൂ.</p>';
+  };
+  const onOrder=()=>{ o.item=$('oItem').value; o.price=$('oPrice').value; o.qty=$('oQty').value;
+    if(model && +o.price && model.price!=+o.price){ model.price=+o.price; model.example=false; store.set('models',models); }
+    if(!edited) $('sMsg').value=build(); refresh(); persistCur(); };
+  ['oItem','oPrice','oQty'].forEach(id=>$(id).addEventListener('input',onOrder));
+  $('sMsg').addEventListener('input',()=>{ edited=true; refresh(); }); $('sNum').addEventListener('input',refresh);
+  $('sGoNum').addEventListener('click',e=>{ const n=normNum($('sNum').value); if(n.length<11){ e.preventDefault(); toast('ശരിയായ number നൽകൂ'); return; }
+    if($('sKeep').checked){ addContact($('sName').value.trim(),n); setTimeout(refresh,50); } });
+  refresh();
+}
+
+/* ---------- backup ---------- */
+$('backup').onclick=()=>{ const data=JSON.stringify({app:'disni-studio',v:2,models,designs,contacts}); saveFile(`Disni_backup_${new Date().toISOString().slice(0,10)}.json`,data,null); };
+$('restore').onchange=async e=>{ const f=e.target.files[0]; if(!f) return; try{ const j=JSON.parse(await f.text()); if(j.app!=='disni-studio') throw 0;
+  models=j.models||[]; designs=j.designs||[]; contacts=j.contacts||[]; store.set('models',models); store.set('designs',designs); store.set('contacts',contacts); renderSaved(); renderModels(); toast('Backup restored'); }catch(err){ toast('ഇത് Disni backup file അല്ല'); } e.target.value=''; };
+
+/* ---------- nav ---------- */
+function go(v){
+  view=v; ['models','design','saved'].forEach(k=>$('v-'+k).hidden=k!==v);
+  document.querySelectorAll('nav.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  if(v==='design'){ if(!cur) cur=newDesign(models[0]); syncModelBar(); syncPanels(); requestAnimationFrame(()=>{ sizeStage(); draw(); }); ensureFonts(); }
+  if(v==='saved') renderSaved();
+  if(v==='models') renderModels();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('nav.tabs button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+
+let toastT;
+function toast(t){ let el=document.querySelector('.toast'); if(!el){ el=document.createElement('div'); el.className='toast'; document.body.appendChild(el);} el.textContent=t; el.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>el.hidden=true,2400); }
+function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- boot ---------- */
+(async()=>{
+  models = sampleModels(); renderModels();
+  const [m,d,c,ct] = await Promise.all([store.get('models'),store.get('designs'),store.get('current'),store.get('contacts')]);
+  if(Array.isArray(m) && m.length) models=m;
+  if(Array.isArray(d)) designs=d;
+  if(Array.isArray(ct)) contacts=ct;
+  if(c && c.layers) cur=c;
+  if(!cur){ cur=newDesign(models[0]); cur.fields={head:'Congratulations',name:'Example Name',det:'First Prize – Elocution\nAnnual Day 2026',by:'Disni Trophies'}; applyTemplate(); }
+  renderModels(); ensureFonts();
+})();
+</script>
