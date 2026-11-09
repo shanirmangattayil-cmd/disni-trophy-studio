@@ -1,5 +1,5 @@
 <!doctype html><html lang="ml"><head><meta charset="utf-8">
-<meta name="disni-web-version" content="1794255922">
+<meta name="disni-web-version" content="1794256217">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#7a0716">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1154,7 +1154,7 @@ function autoSheet(st, onDone, onBack){
   im.onload=()=>{ const avail=cvs.parentElement.clientWidth, maxH=window.innerHeight*0.55, ar=im.naturalWidth/im.naturalHeight;
     W=Math.min(avail,maxH*ar); H=W/ar; cvs.style.width=W+'px'; cvs.style.height=H+'px'; cvs.parentElement.style.width=W+'px'; cvs.parentElement.style.margin='0 auto';
     cvs.width=Math.round(W*dpr); cvs.height=Math.round(H*dpr);
-    if(!ref){ try{ const mk=detectMarker(im); if(mk){ ref={type:'marker',sidePx:mk.sidePx,box:mk.box}; refType='marker'; $('aRefs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k==='marker')); } }catch(e){} }
+    if(!ref){ try{ const mk=detectMarker(im); if(mk){ ref={type:'marker',sidePx:mk.sidePx,box:mk.box}; refType='marker'; try{ localStorage.setItem('disni-sc-hidden','1'); scState(true); }catch(e){} $('aRefs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k==='marker')); } }catch(e){} }
     paint(); if(!plate) run(null,'plate'); else setStat('മുമ്പ് എടുത്ത shape. മാറ്റാൻ trophy-യിൽ tap ചെയ്യൂ'); };
   im.src=st.photo;
   $('aMode').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; mode=b.dataset.m; $('aMode').querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b)); $('aRefs').hidden=mode!=='ref';
