@@ -1,5 +1,5 @@
 <!doctype html><html lang="ml"><head><meta charset="utf-8">
-<meta name="disni-web-version" content="1794254103">
+<meta name="disni-web-version" content="1794255087">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#7a0716">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1428,7 +1428,7 @@ function esc(s){ return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&l
 async function loadUser(){
   models = sampleModels(); designs=[]; contacts=[]; cur=null; renderModels();
   const [m,d,c,ct] = await Promise.all([store.get('models'),store.get('designs'),store.get('current'),store.get('contacts')]);
-  if(Array.isArray(m) && m.length) models=m;
+  if(Array.isArray(m)) models=m;   // an empty list means the user deleted everything — keep it empty
   if(Array.isArray(d)) designs=d;
   if(Array.isArray(ct)) contacts=ct;
   if(c && c.layers) cur=c;
