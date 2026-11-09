@@ -261,6 +261,66 @@ if(!window.claude){ $('bgAuto').hidden=false; $('bgAuto').onclick=()=>{
   else if(/school|class|fest|kalolsavam|cultural|teen|kids|madrasa|മദ്രസ/.test(t)) k='swoosh'; else if(/birthday|celebrat|party/.test(t)) k='confetti'; else if(/achiev|service|award/.test(t)) k='laurel';
   $('bgSw').querySelector(`[data-b="${k}"]`)?.click(); const n=$('bgAutoNote'); n.hidden=false; n.textContent=`${BGS[k].name}: award-ലെ വാക്കുകൾ നോക്കി തിരഞ്ഞെടുത്തു`; }; }
 
+/* ---------- automatic trophy shape (on-phone AI: tap-to-select object) ---------- */
+let isegP=null;
+function getISeg(){
+  if(isegP) return isegP;
+  isegP=(async()=>{
+    const V='https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14';
+    const vision=await import(V+'/vision_bundle.mjs');
+    const files=await vision.FilesetResolver.forVisionTasks(V+'/wasm');
+    return vision.InteractiveSegmenter.createFromOptions(files,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/interactive_segmenter/magic_touch/float32/1/magic_touch.tflite'},outputCategoryMask:false,outputConfidenceMasks:true});
+  })();
+  isegP.catch(()=>{ isegP=null; });
+  return isegP;
+}
+async function maskAt(src,pt){
+  const seg=await getISeg();
+  const im=new Image(); im.src=src; await im.decode();
+  const sc=Math.min(1,1024/Math.max(im.naturalWidth,im.naturalHeight));
+  const c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*sc); c.height=Math.round(im.naturalHeight*sc); c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+  const res=seg.segment(c,{keypoint:{x:pt.x,y:pt.y}});
+  const masks=res.confidenceMasks||[]; let best=null, bv=-1;
+  for(const m of masks){ const a=m.getAsFloat32Array(); const v=a[Math.min(m.height-1,Math.floor(pt.y*m.height))*m.width+Math.min(m.width-1,Math.floor(pt.x*m.width))]; if(v>bv){ bv=v; best={w:m.width,h:m.height,a:Float32Array.from(a)}; } }
+  try{ res.close&&res.close(); }catch(e){}
+  if(!best) throw {code:'none'};
+  return best;
+}
+// connected region around the tap -> outline by casting rays from its centre (good for plates, shields, arches, figures)
+function regionAt(m,pt){
+  const {w,h,a}=m, inside=new Uint8Array(w*h); for(let i=0;i<a.length;i++) inside[i]=a[i]>0.5?1:0;
+  let sx=Math.floor(pt.x*w), sy=Math.floor(pt.y*h);
+  if(!inside[sy*w+sx]){ let found=false; for(let r=1;r<40&&!found;r++) for(let dy=-r;dy<=r&&!found;dy++) for(let dx=-r;dx<=r;dx++){ const x=sx+dx,y=sy+dy; if(x>=0&&y>=0&&x<w&&y<h&&inside[y*w+x]){ sx=x;sy=y;found=true;break; } } if(!found) return null; }
+  const comp=new Uint8Array(w*h), st=[sy*w+sx]; comp[sy*w+sx]=1; let n=0,cx=0,cy=0;
+  while(st.length){ const i=st.pop(), x=i%w, y=(i-x)/w; n++; cx+=x; cy+=y;
+    if(x>0&&inside[i-1]&&!comp[i-1]){comp[i-1]=1;st.push(i-1);} if(x<w-1&&inside[i+1]&&!comp[i+1]){comp[i+1]=1;st.push(i+1);}
+    if(y>0&&inside[i-w]&&!comp[i-w]){comp[i-w]=1;st.push(i-w);} if(y<h-1&&inside[i+w]&&!comp[i+w]){comp[i+w]=1;st.push(i+w);} }
+  if(n<200) return null;
+  return {comp,w,h,n,cx:cx/n,cy:cy/n};
+}
+function outlineOf(R){
+  const {comp,w,h,cx,cy}=R, pts=[], N=180, maxR=Math.hypot(w,h);
+  for(let k=0;k<N;k++){ const t=k/N*Math.PI*2, dx=Math.cos(t), dy=Math.sin(t); let last=0, miss=0;
+    for(let r=0;r<maxR;r+=1){ const x=Math.round(cx+dx*r), y=Math.round(cy+dy*r); if(x<0||y<0||x>=w||y>=h) break;
+      if(comp[y*w+x]){ last=r; miss=0; } else if(++miss>6) break; }
+    pts.push([(cx+dx*last)/w,(cy+dy*last)/h]); }
+  return pts;
+}
+function longAxis(R){
+  const {comp,w,h,cx,cy}=R; let sxx=0,syy=0,sxy=0,n=0;
+  for(let i=0;i<comp.length;i++) if(comp[i]){ const x=i%w-cx, y=(i-i%w)/w-cy; sxx+=x*x; syy+=y*y; sxy+=x*y; n++; }
+  const th=0.5*Math.atan2(2*sxy,sxx-syy), ux=Math.cos(th), uy=Math.sin(th); let mn=1e9,mx=-1e9;
+  for(let i=0;i<comp.length;i++) if(comp[i]){ const x=i%w-cx, y=(i-i%w)/w-cy, p=x*ux+y*uy; if(p<mn)mn=p; if(p>mx)mx=p; }
+  return {a:[(cx+ux*mn)/w,(cy+uy*mn)/h], b:[(cx+ux*mx)/w,(cy+uy*mx)/h]};
+}
+if(!window.claude){
+  autoDetect = async function(src, pt, want){
+    const p = pt || {x:.5,y:.45};
+    const m = await maskAt(src,p); const R = regionAt(m,p); if(!R) return {};
+    return want==='ref' ? {ref:longAxis(R)} : {plate:outlineOf(R)};
+  };
+}
+
 /* ---------- background remover for people photos ---------- */
 let segP=null;
 function getSegmenter(){
