@@ -1,0 +1,45 @@
+name: Build Disni APK
+on:
+  push:
+    branches: [main]
+    paths: ['app/**', 'build.gradle', 'settings.gradle', 'gradle.properties', '.github/workflows/build.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.9' }
+      - name: Signing key (optional)
+        env:
+          KEY_B64: ${{ secrets.DISNI_KEYSTORE_B64 }}
+          KEY_PASS: ${{ secrets.DISNI_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEY_B64" ] || [ -z "$KEY_PASS" ]; then echo "SIGNED=0" >> "$GITHUB_ENV"; exit 0; fi
+          echo "SIGNED=1" >> "$GITHUB_ENV"
+          printf '%s' "$KEY_B64" | tr -d ' \r\n' | base64 -d > "$RUNNER_TEMP/disni.jks"
+          echo "DISNI_KEYSTORE=$RUNNER_TEMP/disni.jks" >> "$GITHUB_ENV"
+          echo "DISNI_KEYSTORE_PASSWORD=$(printf '%s' "$KEY_PASS" | tr -d ' \r\n')" >> "$GITHUB_ENV"
+      - name: Build
+        run: gradle assembleRelease --no-daemon
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "$SIGNED" = "1" ]; then
+            cp app/build/outputs/apk/release/app-release.apk Disni-Trophies.apk
+            echo ${{ github.run_number }} > release/version.txt || true
+            gh release delete latest --yes --cleanup-tag || true
+            gh release create latest Disni-Trophies.apk --title "Disni Trophies v${{ github.run_number }}" --notes "Tap Disni-Trophies.apk to download, then open it to install."
+          else
+            cp app/build/outputs/apk/release/app-release-unsigned.apk Disni-unsigned.apk
+            cp "$(ls -d $ANDROID_HOME/build-tools/*/ | sort -V | tail -1)lib/apksigner.jar" apksigner.jar
+            echo ${{ github.run_number }} > run.txt
+            gh release delete unsigned --yes --cleanup-tag || true
+            gh release create unsigned Disni-unsigned.apk apksigner.jar run.txt --prerelease --title "Unsigned build ${{ github.run_number }}" --notes "Not for installing. The signed app is the latest release."
+          fi

@@ -1,0 +1,28 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'com.disni.trophies'
+    compileSdk 34
+    defaultConfig {
+        applicationId 'com.disni.trophies'
+        minSdk 24
+        targetSdk 34
+        def run = System.getenv('GITHUB_RUN_NUMBER') ?: '1'
+        versionCode Integer.parseInt(run)
+        versionName "1.${run}"
+    }
+    signingConfigs {
+        release {
+            def ks = System.getenv('DISNI_KEYSTORE')
+            if (ks) { storeFile file(ks); storePassword System.getenv('DISNI_KEYSTORE_PASSWORD'); keyAlias 'disni'; keyPassword System.getenv('DISNI_KEYSTORE_PASSWORD') }
+        }
+    }
+    buildTypes { release { minifyEnabled false; signingConfig System.getenv('DISNI_KEYSTORE') ? signingConfigs.release : null } }
+    buildFeatures { buildConfig true }
+    compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.11.0'
+    implementation 'androidx.core:core:1.13.1'
+}
