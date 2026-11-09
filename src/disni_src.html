@@ -65,6 +65,10 @@ nav.tabs button[aria-selected="true"]{color:#2a1604;background:var(--gold-grad)}
 .mcard b{font-size:14px;line-height:1.3;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mcard small{color:var(--muted);font-size:12px}
 .tag{position:absolute;top:8px;left:8px;z-index:1;background:rgba(0,0,0,.6);border:1px solid var(--line-2);color:var(--gold);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;padding:1px 8px;border-radius:20px}
+.sizecard{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line-2);border-radius:16px;padding:12px;margin-bottom:14px;background:linear-gradient(180deg,rgba(0,200,83,.10),rgba(0,0,0,.08))}
+.sizecard .sq{width:44px;height:44px;flex:none;border-radius:4px;background:#00c853;box-shadow:0 0 0 3px #fff,0 0 0 4px #111}
+.sizecard b{display:block;font-size:14px}.sizecard small{display:block;color:var(--muted);font-size:12px;line-height:1.45;margin-top:2px}
+.mmset{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}.mmset .inp{width:76px;padding:6px 8px;font-size:14px}
 .addcard{border:1px dashed var(--line-2);background:radial-gradient(circle at 50% 35%,rgba(232,194,106,.08),transparent 70%);color:var(--gold);border-radius:16px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-weight:700}
 .addcard .plus{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--gold-grad);color:#2a1604;margin-bottom:6px}
 
@@ -217,6 +221,12 @@ input[type=range]{width:100%;accent-color:var(--gold)}
     <p class="eyebrow">Collection</p>
     <h2>Trophy Models</h2>
     <p class="sub">ഷെൽഫിലെ ഓരോ model-ന്റെയും photo എടുത്ത്, print area-യുടെ size (mm) save ചെയ്യൂ.</p>
+    <div class="sizecard">
+      <div class="sq"></div>
+      <div class="grow"><b>Size തനിയെ കിട്ടാൻ: Disni Size Card</b><small>ഒരു തവണ A4-ൽ <b>100% (Actual size)</b>-ൽ print ചെയ്ത്, photo എടുക്കുമ്പോൾ trophy-യുടെ തൊട്ടടുത്ത് നിർത്തൂ. പച്ച ചതുരം app തനിയെ കണ്ടെത്തി mm കണക്കാക്കും.</small>
+        <div class="row" style="margin-top:8px"><a class="btn sm primary" href="https://shanirmangattayil-cmd.github.io/disni-trophy-studio/disni-size-card.pdf" target="_blank" rel="noopener">Size card download</a>
+        <label class="mmset">ചതുരം <input class="inp" id="mkMm" type="number" step="0.5" inputmode="decimal"> mm</label></div></div>
+    </div>
     <div class="grid" id="modelGrid"></div>
   </section>
 
@@ -964,7 +974,28 @@ function openDesignFor(m){
 }
 
 /* ---------- automatic shape + size from the photo ---------- */
-const AUTO_REFS=[['card','ATM / ID card',85.6],['a4','A4 paper',297],['coin10','₹10 coin',27],['none','Reference ഇല്ല',0]];
+function markerMm(){ let v=100; try{ v=+localStorage.getItem('disni-marker-mm')||100; }catch(e){} return v; }
+$('mkMm').value=markerMm();
+$('mkMm').addEventListener('change',e=>{ const v=+e.target.value; if(v>20&&v<300){ try{ localStorage.setItem('disni-marker-mm',String(v)); }catch(err){} toast('Size card ചതുരം: '+v+' mm'); } else e.target.value=markerMm(); });
+// finds the green square of the Disni Size Card in a photo (no AI needed)
+function detectMarker(im){
+  const sc=Math.min(1,900/Math.max(im.naturalWidth,im.naturalHeight)), w=Math.round(im.naturalWidth*sc), h=Math.round(im.naturalHeight*sc);
+  const c=document.createElement('canvas'); c.width=w; c.height=h; const x=c.getContext('2d',{willReadFrequently:true}); x.drawImage(im,0,0,w,h);
+  const d=x.getImageData(0,0,w,h).data, g=new Uint8Array(w*h);
+  for(let i=0,j=0;i<d.length;i+=4,j++){ const r=d[i],gg=d[i+1],b=d[i+2], mx=Math.max(r,gg,b), mn=Math.min(r,gg,b); if(mx<55) continue;
+    const sat=(mx-mn)/mx; if(mx!==gg||sat<.42) continue; let hue=60*((b-r)/(mx-mn))+120; if(hue>=95&&hue<=165) g[j]=1; }
+  const seen=new Uint8Array(w*h); let best=null;
+  for(let s0=0;s0<g.length;s0++){ if(!g[s0]||seen[s0]) continue; const st=[s0]; seen[s0]=1; let n=0,x0=1e9,x1=-1,y0=1e9,y1=-1;
+    while(st.length){ const i=st.pop(), px=i%w, py=(i-px)/w; n++; if(px<x0)x0=px; if(px>x1)x1=px; if(py<y0)y0=py; if(py>y1)y1=py;
+      if(px>0&&g[i-1]&&!seen[i-1]){seen[i-1]=1;st.push(i-1);} if(px<w-1&&g[i+1]&&!seen[i+1]){seen[i+1]=1;st.push(i+1);}
+      if(py>0&&g[i-w]&&!seen[i-w]){seen[i-w]=1;st.push(i-w);} if(py<h-1&&g[i+w]&&!seen[i+w]){seen[i+w]=1;st.push(i+w);} }
+    const bw=x1-x0+1, bh=y1-y0+1, ar=bw/bh, fill=n/(bw*bh);
+    if(n<350||ar<.55||ar>1.8||fill<.55) continue;
+    if(!best||n>best.n) best={n,box:{x0:x0/w,y0:y0/h,x1:(x1+1)/w,y1:(y1+1)/h}}; }
+  if(!best) return null;
+  return {sidePx:Math.sqrt(best.n)/sc, box:best.box};
+}
+const AUTO_REFS=[['marker','Disni Size Card',0],['card','ATM / ID card',85.6],['a4','A4 paper',297],['coin10','₹10 coin',27],['none','Reference ഇല്ല',0]];
 async function photoBlob(src,max=1200){ const im=new Image(); im.src=src; await im.decode(); const s=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight));
   const c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*s); c.height=Math.round(im.naturalHeight*s); c.getContext('2d').drawImage(im,0,0,c.width,c.height);
   return new Promise(r=>c.toBlob(r,'image/jpeg',.85)); }
@@ -999,28 +1030,30 @@ function autoSheet(st, onDone, onBack){
   </div></div>`;
   const cvs=$('acv'), im=new Image(); let W=0,H=0, dpr=Math.min(3,window.devicePixelRatio||1);
   $('aRefs').innerHTML=AUTO_REFS.map(([k,n,mm])=>`<button class="chip h" data-k="${k}" aria-pressed="${k===refType}">${n}${mm?` · ${mm} mm`:''}</button>`).join('');
-  const refMm=()=>(AUTO_REFS.find(r=>r[0]===refType)||[])[2]||0;
-  const kNow=()=>{ if(!ref||!ref.a||!refMm()) return 0; const L=Math.hypot((ref.a[0]-ref.b[0])*im.naturalWidth,(ref.a[1]-ref.b[1])*im.naturalHeight); return L>8?refMm()/L:0; };
+  const refMm=()=>refType==='marker'?markerMm():((AUTO_REFS.find(r=>r[0]===refType)||[])[2]||0);
+  const kNow=()=>{ if(ref&&ref.type==='marker') return ref.sidePx>8?markerMm()/ref.sidePx:0; if(!ref||!ref.a||!refMm()) return 0; const L=Math.hypot((ref.a[0]-ref.b[0])*im.naturalWidth,(ref.a[1]-ref.b[1])*im.naturalHeight); return L>8?refMm()/L:0; };
   const bbox=()=>{ const xs=plate.map(p=>p[0]), ys=plate.map(p=>p[1]); return {x0:Math.min(...xs),x1:Math.max(...xs),y0:Math.min(...ys),y1:Math.max(...ys)}; };
   function size(){ if(!plate) return null; const b=bbox(), k=kNow(); if(!k) return null; return {w:Math.round((b.x1-b.x0)*im.naturalWidth*k*2)/2, h:Math.round((b.y1-b.y0)*im.naturalHeight*k*2)/2}; }
   function paint(){
     if(!W) return; const x=cvs.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); x.clearRect(0,0,W,H); x.drawImage(im,0,0,W,H);
     if(plate){ x.save(); x.fillStyle='rgba(0,0,0,.5)'; x.beginPath(); x.rect(0,0,W,H); polyPath(x,plate,false,0,0,W,H); x.fill('evenodd'); x.restore();
       x.beginPath(); polyPath(x,plate,false,0,0,W,H); x.lineWidth=2.5; x.strokeStyle='#e8c26a'; x.stroke(); }
+    if(ref&&ref.type==='marker'&&ref.box){ const b=ref.box; x.lineWidth=3; x.strokeStyle='#fff'; x.strokeRect(b.x0*W-3,b.y0*H-3,(b.x1-b.x0)*W+6,(b.y1-b.y0)*H+6); x.strokeStyle='#00c853'; x.lineWidth=2; x.strokeRect(b.x0*W-6,b.y0*H-6,(b.x1-b.x0)*W+12,(b.y1-b.y0)*H+12); }
     if(ref&&ref.a){ x.beginPath(); x.moveTo(ref.a[0]*W,ref.a[1]*H); x.lineTo(ref.b[0]*W,ref.b[1]*H); x.lineWidth=3; x.strokeStyle='#4da3ff'; x.stroke();
       [ref.a,ref.b].forEach(p=>{ x.beginPath(); x.arc(p[0]*W,p[1]*H,6,0,Math.PI*2); x.fillStyle='#4da3ff'; x.fill(); }); }
     if(busy){ x.fillStyle='rgba(43,4,12,.55)'; x.fillRect(0,0,W,H); x.fillStyle='#fbe7a6'; x.font='700 15px Manrope, sans-serif'; x.textAlign='center'; x.fillText('Shape കണ്ടെത്തുന്നു…',W/2,H/2); }
     const sz=size();
-    $('aInfo').textContent = !plate ? '' : sz ? `Size: ${fmt(sz.w)} × ${fmt(sz.h)} mm (${AUTO_REFS.find(r=>r[0]===refType)[1]} വെച്ച്)` : 'Size-ന്: card / A4 / coin trophy-യുടെ അടുത്ത് വച്ച് photo എടുക്കൂ, അല്ലെങ്കിൽ Save-ന് മുമ്പ് width കൈകൊണ്ട് നൽകൂ';
+    $('aInfo').textContent = !plate ? '' : sz ? `Size: ${fmt(sz.w)} × ${fmt(sz.h)} mm (${AUTO_REFS.find(r=>r[0]===refType)[1]} വെച്ച്)` : 'Size തനിയെ കിട്ടാൻ Disni Size Card trophy-യുടെ അടുത്ത് വച്ച് photo എടുക്കൂ (Models page-ൽ download ഉണ്ട്). ഇല്ലെങ്കിൽ Save-ന് മുമ്പ് width കൈകൊണ്ട് നൽകൂ.';
   }
   const setStat=t=>$('aStat').textContent=t;
   async function run(pt, want){
     if(busy) return; busy=true; paint();
     try{
       const r=await autoDetect(st.photo, pt, want);
-      if(want==='ref'){ const rr=r.ref&&r.ref.a?r.ref:r; if(rr&&rr.a){ ref={type:refType,a:rr.a,b:rr.b}; setStat('Reference കിട്ടി — size താഴെ'); } else setStat('Reference കണ്ടില്ല — card / coin-ന്റെ മുകളിൽ tap ചെയ്യൂ'); }
+      if(want==='ref'&&refType==='marker'){ setStat('Size Card ആണെങ്കിൽ tap വേണ്ട — തനിയെ കണ്ടെത്തും. വേറെ reference ആണെങ്കിൽ അത് തിരഞ്ഞെടുക്കൂ'); }
+      else if(want==='ref'){ const rr=r.ref&&r.ref.a?r.ref:r; if(rr&&rr.a){ ref={type:refType,a:rr.a,b:rr.b}; setStat('Reference കിട്ടി — size താഴെ'); } else setStat('Reference കണ്ടില്ല — card / coin-ന്റെ മുകളിൽ tap ചെയ്യൂ'); }
       else {
-        if(r.plate&&r.plate.length>2){ plate=simplifyPoly(r.plate.map(p=>[Math.max(0,Math.min(1,+p[0])),Math.max(0,Math.min(1,+p[1]))]),0.004); setStat('Shape കിട്ടി ✓ ശരിയല്ലെങ്കിൽ trophy-യുടെ print ഭാഗത്ത് tap ചെയ്യൂ'); }
+        if(r.plate&&r.plate.length>2){ plate=simplifyPoly(r.plate.map(p=>[Math.max(0,Math.min(1,+p[0])),Math.max(0,Math.min(1,+p[1]))]),0.004); setStat('Shape കിട്ടി ✓'+(ref&&ref.type==='marker'?' · Size card കണ്ടു ✓':'')+' — ശരിയല്ലെങ്കിൽ trophy-യുടെ print ഭാഗത്ത് tap ചെയ്യൂ'); }
         else setStat('Shape കണ്ടില്ല — trophy-യുടെ print ഭാഗത്ത് tap ചെയ്യൂ');
         if(r.ref&&r.ref.a&&r.ref.type&&r.ref.type!=='none'&&!ref){ refType=AUTO_REFS.some(x=>x[0]===r.ref.type)?r.ref.type:'card'; ref={type:refType,a:r.ref.a,b:r.ref.b};
           $('aRefs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===refType)); }
@@ -1033,11 +1066,16 @@ function autoSheet(st, onDone, onBack){
   }
   im.onload=()=>{ const avail=cvs.parentElement.clientWidth, maxH=window.innerHeight*0.55, ar=im.naturalWidth/im.naturalHeight;
     W=Math.min(avail,maxH*ar); H=W/ar; cvs.style.width=W+'px'; cvs.style.height=H+'px'; cvs.parentElement.style.width=W+'px'; cvs.parentElement.style.margin='0 auto';
-    cvs.width=Math.round(W*dpr); cvs.height=Math.round(H*dpr); paint(); if(!plate) run(null,'plate'); else setStat('മുമ്പ് എടുത്ത shape. മാറ്റാൻ trophy-യിൽ tap ചെയ്യൂ'); };
+    cvs.width=Math.round(W*dpr); cvs.height=Math.round(H*dpr);
+    if(!ref){ try{ const mk=detectMarker(im); if(mk){ ref={type:'marker',sidePx:mk.sidePx,box:mk.box}; refType='marker'; $('aRefs').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k==='marker')); } }catch(e){} }
+    paint(); if(!plate) run(null,'plate'); else setStat('മുമ്പ് എടുത്ത shape. മാറ്റാൻ trophy-യിൽ tap ചെയ്യൂ'); };
   im.src=st.photo;
   $('aMode').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; mode=b.dataset.m; $('aMode').querySelectorAll('button').forEach(x=>x.setAttribute('aria-selected',x===b)); $('aRefs').hidden=mode!=='ref';
     setStat(mode==='ref'?'Reference തിരഞ്ഞെടുത്ത് photo-യിൽ അതിന്റെ മുകളിൽ tap ചെയ്യൂ':'Trophy-യുടെ print ഭാഗത്ത് tap ചെയ്യൂ'); };
-  $('aRefs').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; refType=b.dataset.k; if(ref) ref.type=refType; if(refType==='none') ref=null;
+  $('aRefs').onclick=e=>{ const b=e.target.closest('button'); if(!b) return; refType=b.dataset.k;
+    if(refType==='marker'){ const mk=detectMarker(im); ref=mk?{type:'marker',sidePx:mk.sidePx,box:mk.box}:null; setStat(mk?'Size card കണ്ടു ✓':'Photo-യിൽ Size Card-ന്റെ പച്ച ചതുരം കണ്ടില്ല'); }
+    else if(ref&&ref.type==='marker') ref=null; else if(ref) ref.type=refType;
+    if(refType==='none') ref=null;
     $('aRefs').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b)); paint(); };
   cvs.addEventListener('click',e=>{ if(!canAuto) return; const r=cvs.getBoundingClientRect(); run({x:(e.clientX-r.left)/W,y:(e.clientY-r.top)/H}, mode); });
   $('aBack').onclick=onBack;
